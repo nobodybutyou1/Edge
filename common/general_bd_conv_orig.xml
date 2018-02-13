@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<design name="$DESIGN_NAME">
+  <constraint type="relative" name="in->s1:: req ">
+    <description>Delay matching of Logic with Pipeline Request Signal</description>
+    <base>
+      <path>
+        <startpoint>[remove_from_collection [all_inputs] [get_ports "Lreq Rack"]]</startpoint>
+        <endpoint>$edge_clk_m_latch_in</endpoint>   
+      </path>
+    </base>
+    
+    <enforced>
+      <path>
+        <startpoint>[get_pins -of_objects *DL_in_s1_mybuf1 -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_in_s1_mybuf1 -filter "direction==2"]</endpoint>
+      </path>
+      <path delayTarget="true">
+        <startpoint>[get_pins -of_objects *DL_in_s1_mybuf1 -filter "direction==2"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_in_s1_mybufn -filter "direction==1"]</endpoint>
+      </path>
+      <path> 
+        <startpoint>[get_pins -of_objects *DL_in_s1_mybufn -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_in_s1_mybufn -filter "direction==2"]</endpoint>
+      </path>
+      <path>
+        <startpoint>$edge_clk_m_pin</startpoint>
+        <endpoint>$edge_clk_m_latch_in</endpoint>   
+      </path>
+    </enforced>
+  </constraint>
+  
+  <constraint type="relative" name="s1->s2:: req ">
+    <description>Delay matching of Logic with Pipeline Request Signal</description>
+    <base>
+      <path>
+        <startpoint>$edge_clk_m_latch_out</startpoint>
+        <endpoint>$edge_clk_s_latch_in</endpoint>   
+      </path>
+      <path>
+        <startpoint>$edge_clk_m_pin</startpoint>
+        <endpoint>$edge_clk_m_latch_in</endpoint>   
+      </path>
+    </base>
+    
+    <enforced>
+      <path>
+        <startpoint>[get_pins -of_objects *DL_s1_s2_mybuf1 -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s1_s2_mybuf1 -filter "direction==2"]</endpoint>
+      </path>
+      <path delayTarget="true">
+        <startpoint>[get_pins -of_objects *DL_s1_s2_mybuf1 -filter "direction==2"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s1_s2_mybufn -filter "direction==1"]</endpoint>
+      </path>
+      <path> 
+        <startpoint>[get_pins -of_objects *DL_s1_s2_mybufn -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s1_s2_mybufn -filter "direction==2"]</endpoint>
+      </path>
+      <path>
+        <startpoint>$edge_clk_s_pin</startpoint>
+        <endpoint>$edge_clk_s_latch_in</endpoint>   
+      </path>
+    </enforced>
+  </constraint>
+  
+  <constraint type="relative" name="s2->s1:: req ">
+    <description>Delay matching of Logic with Pipeline Request Signal</description>
+    <base>
+      <path>
+        <startpoint>$edge_clk_s_latch_out</startpoint>
+        <endpoint>$edge_clk_m_latch_in</endpoint>   
+      </path>
+      <path>
+        <startpoint>$edge_clk_s_pin</startpoint>
+        <endpoint>$edge_clk_s_latch_in</endpoint>   
+      </path>
+    </base>
+    
+    <enforced>
+      <path>
+        <startpoint>[get_pins -of_objects *DL_s2_s1_mybuf1 -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_s1_mybuf1 -filter "direction==2"]</endpoint>
+      </path>
+      <path delayTarget="true">
+        <startpoint>[get_pins -of_objects *DL_s2_s1_mybuf1 -filter "direction==2"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_s1_mybufn -filter "direction==1"]</endpoint>
+      </path>
+      <path> 
+        <startpoint>[get_pins -of_objects *DL_s2_s1_mybufn -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_s1_mybufn -filter "direction==2"]</endpoint>
+      </path>
+      <path>
+        <startpoint>$edge_clk_m_pin</startpoint>
+        <endpoint>$edge_clk_m_latch_in</endpoint>   
+      </path>
+    </enforced>
+  </constraint>
+
+  <constraint type="relative" name="s2->out:: req ">
+    <description>Delay matching of Logic with Pipeline Request Signal</description>
+    <base>
+      <path>
+        <startpoint>$edge_clk_s_latch_out</startpoint>
+        <endpoint>[all_outputs]</endpoint>   
+      </path>
+      <path>
+        <startpoint>$edge_clk_s_pin</startpoint>
+        <endpoint>$edge_clk_s_latch_in</endpoint>   
+      </path>
+    </base>
+    
+    <enforced>
+      <path>
+        <startpoint>[get_pins -of_objects *DL_s2_out_mybuf1 -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_out_mybuf1 -filter "direction==2"]</endpoint>
+      </path>
+      <path delayTarget="true">
+        <startpoint>[get_pins -of_objects *DL_s2_out_mybuf1 -filter "direction==2"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_out_mybufn -filter "direction==1"]</endpoint>
+      </path>
+      <path> 
+        <startpoint>[get_pins -of_objects *DL_s2_out_mybufn -filter "direction==1"]</startpoint>
+        <endpoint>[get_pins -of_objects *DL_s2_out_mybufn -filter "direction==2"]</endpoint>
+      </path>
+    </enforced>
+  </constraint>
+  
+</design>

@@ -1,0 +1,242 @@
+#!/bin/bash
+all() {
+    echo "Not supported yet!"
+}
+
+dc() {
+    if [ $FORCE = false ] && [ -d "sync_syn" ] ; then
+        echo "ERROR: Output folder sync_syn already existed! You MUST use force mode when taks is dc!"
+        exit
+    fi
+    if [ $FORCE = false ] && [ -d "ff2latch" ] ; then
+        echo "ERROR: Output folder ff2latch already existed! You MUST use force mode when taks is dc!"
+        exit
+    fi
+    if [ $FORCE = false ] && [ -d "retiming" ] ; then
+        echo "ERROR: Output folder retiming already existed! You MUST use force mode when taks is dc!"
+        exit
+    fi
+    if [ $FORCE = false ] && [ -d "bd_conv" ] ; then
+        echo "ERROR: Output folder bd_conv already existed! You MUST use force mode when taks is dc!"
+        exit
+    fi
+    if [ $FORCE = false ] && [ -d "fixdelay" ] ; then
+        echo "ERROR: Output folder fixdelay already existed! You MUST use force mode when taks is dc!"
+        exit
+    fi
+
+    mkdir sync_syn -p
+    mkdir sync_syn/logs -p
+    mkdir ff2latch -p
+    mkdir ff2latch/logs -p
+    mkdir retiming -p
+    mkdir retiming/logs -p
+    mkdir bd_conv -p
+    mkdir bd_conv/logs -p
+    mkdir fixdelay -p
+    mkdir fixdelay/logs -p
+    dc_shell-xg-t -f $EDGE_ROOT/scripts/dc/dc.tcl | tee logs/dc.log
+}
+
+sync_syn() {
+    if [ $FORCE = false ] && [ -d "sync_syn" ] ; then
+        echo "ERROR: Output folder sync_syn already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    mkdir sync_syn -p
+    mkdir sync_syn/logs -p
+    dc_shell-xg-t -f $EDGE_ROOT/scripts/sync_syn/sync_syn.tcl | tee logs/sync_syn.log
+}
+
+ff2latch() {
+    if [ $FORCE = false ] && [ -d "ff2latch" ] ; then
+        echo "ERROR: Output folder ff2latch already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    mkdir ff2latch -p
+    mkdir ff2latch/logs -p
+    dc_shell-xg-t -f $EDGE_ROOT/scripts/ff2latch/ff2latch.tcl | tee logs/ff2latch.log
+}
+
+retiming() {
+    if [ $FORCE = false ] && [ -d "retiming" ] ; then
+        echo "ERROR: Output folder retiming already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    mkdir retiming -p
+    mkdir retiming/logs -p
+    dc_shell-xg-t -f $EDGE_ROOT/scripts/retiming/retiming.tcl | tee logs/retiming.log
+}
+
+bd_conv() {
+    if [ $FORCE = false ] && [ -d "bd_conv" ] ; then
+        echo "ERROR: Output folder bd_conv already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    if [ $FORCE = false ] && [ -d "fixdelay" ] ; then
+        echo "ERROR: Output folder fixdelay already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    mkdir bd_conv -p
+    mkdir bd_conv/logs -p
+    mkdir fixdelay -p
+    mkdir fixdelay/logs -p
+    dc_shell-xg-t -f $EDGE_ROOT/scripts/bd_conv/bd_conv.tcl | tee logs/bd_conv.log
+}
+
+icc() {
+    if [ $FORCE = false ] && [ -d "icc" ] ; then
+        echo "ERROR: Output folder icc already existed! You can use force mode to overwrite perious results."
+        exit
+    fi
+    mkdir icc -p
+    mkdir icc/logs -p
+    mkdir icc/reports -p
+    icc_shell -f $EDGE_ROOT/scripts/icc/icc.tcl | tee logs/icc.log
+}
+
+
+
+
+OPTS=`getopt -o hefbt:d:k:l: --long help,example,force,debug,task:,designtcl:,techtcl:,filelisttcl: -- "$@"`
+if [ $? != 0 ] ; then echo "help info1" >&2 ; exit 1 ; fi
+eval set -- "$OPTS"
+
+HELP=false
+FORCE=false
+TASK="all"
+TASK_S=false
+DTCL="desgin.tcl"
+DTCL_S=false
+KTCL="tech.tcl"
+KTCL_S=false
+FTCL="filelist.tcl"
+FTCL_S=false
+EXAMPLE=false
+DEBUG=false
+
+while true; do
+    case "$1" in
+        -h | --help )
+            HELP=true
+            shift
+        ;;
+        -f | --force )
+            FORCE=true
+            shift
+        ;;
+        -e | --example )
+            EXAMPLE=true
+            shift
+        ;;
+        -t | --task )
+            TASK="$2"
+            TASK_S=true
+            shift
+            shift
+        ;;
+        -d | --designtcl )
+            DTCL="$2"
+            DTCL_S=true
+            shift
+            shift
+        ;;
+        -k | --techtcl )
+            KTCL="$2"
+            KTCL_S=true
+            shift
+            shift
+        ;;
+        -l | --filelisttcl )
+            FTCL="$2"
+            FTCL_S=true
+            shift
+            shift
+        ;;
+        -b | --debug )
+            DEBUG=true
+            shift
+        ;;
+        -- )
+            shift
+            break
+        ;;
+        * )
+            break
+        ;;
+    esac
+done
+
+if [ $HELP = true ] || [[ $HELP = false && $FORCE = false && $TASK_S = false ]] ; then
+    echo "help info2"
+    exit
+else
+    if [[ $TASK != "all" && $TASK != "sync_syn" && $TASK != "ff2latch" && $TASK != "retiming" && $TASK != "bd_conv" && $TASK != "dc" && $TASK != "icc" ]] ; then
+        echo "ERROR: Wrong task!"
+        exit
+    fi
+    if [ $FORCE = true ]; then
+        echo "WARNING: Force mode enabled! All data will be overwitten!"
+    fi
+    if [ $TASK_S = false ]; then
+        echo "WARNING: No task spcified! Running all tasks!"
+    fi
+    if [ $DTCL_S = false ]; then
+        echo "WARNING: No design tcl is speicfied! Using design.tcl by default!"
+    fi
+    if [ $KTCL_S = false ]; then
+        echo "WARNING: No tech tcl is speicfied! Using tech.tcl by default!"
+    fi
+    if [ $FTCL_S = false ]; then
+        echo "WARNING: No filelist tcl is speicfied! Using filelist.tcl by default!"
+    fi
+fi
+
+mkdir work -p
+mkdir logs -p
+mkdir test -p
+mkdir tb -p
+cp $EDGE_ROOT/common/Makefile . -f
+cp $EDGE_ROOT/tb . -rf
+export EDGE_DESIGN_TCL=$DTCL
+export EDGE_TECH_TCL=$KTCL
+export EDGE_FILE_TCL=$FTCL
+export DEBUG=$DEBUG
+if [ $EXAMPLE = true ] && [ $DTCL_S = false ]; then
+    export EDGE_DESIGN_TCL="$EDGE_ROOT/example/plasma/tcl/design.tcl"
+fi
+if [ $EXAMPLE = true ] && [ $KTCL_S = false ]; then
+    export EDGE_TECH_TCL="$EDGE_ROOT/example/plasma/tcl/tech.tcl"
+fi
+if [ $EXAMPLE = true ] && [ $FTCL_S = false ]; then
+    export EDGE_FILE_TCL="$EDGE_ROOT/example/plasma/tcl/filelist.tcl"
+fi
+case "$TASK" in
+    all )
+        all
+    ;;
+    sync_syn )
+        sync_syn
+    ;;
+    ff2latch )
+        ff2latch
+    ;;
+    retiming )
+        retiming
+    ;;
+    bd_conv )
+        bd_conv
+    ;;
+    dc )
+        dc
+    ;;
+    icc )
+        icc
+    ;;
+    * )
+        echo "ERROR: Wrong task!"
+        exit
+    ;;
+esac
+
+
