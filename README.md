@@ -19,6 +19,8 @@ ARGUMENTS
 	-f	
 		It's optional. If you specify this, the flow will overwrite previous results.
 	-l /path/to/customer's/filelist.tcl
-		It's optional. Specifies where the filelist.tcl locates. If you don't specify it, edge will use the tech.tcl in folder Edge1.0.2->example->plasma->filelist.tcl. This file is for the design synthesis. This is new in Edge1.0.2
+		It's optional. Specifies where the filelist.tcl locates. If you don't specify it, edge will use the tech.tcl in folder Edge1.0.2->example->plasma->filelist.tcl. This file is for the design synthesis. 
 	-b
-		It's optional. It is used to debug. If you specify this, the flow will not exit dc_shell automatically. This is new in Edge1.0.2.
+		It's optional. It is used to debug. If you specify this, the flow will not exit dc_shell automatically. 
+
+Note: This version includes controller constraints. Reset bug during retiming is fixed. PnR in this version works.
