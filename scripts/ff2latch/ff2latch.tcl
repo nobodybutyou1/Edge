@@ -31,8 +31,7 @@ if {[list_design] == 0} {
 	define_design_lib WORK -path $WORK_FOLDER
 	set target_library "$target_library EDGE.db"
 	set link_library [concat * $target_library]
-	analyze -format verilog $SYNC_SYN_NETLIST
-	elaborate $DESIGN_NAME
+	read_file -format verilog $SYNC_SYN_NETLIST
 	read_sdc $SYNC_SYN_SDC
 	set_dont_touch_network edge_clk_s
 	link

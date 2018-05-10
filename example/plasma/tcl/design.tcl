@@ -51,11 +51,17 @@ set DESIGN_FOLDER "$env(EDGE_ROOT)/example/plasma/rtl"
 set CLK_PERIOD "1.4"
 set CLOCK_NAME "clk"
 
+# Pulse width for master and slave clocks
+set PULSE_WIDTH [expr $CLK_PERIOD/4]
+
+# extra margin from input to master latches
+set extra_in_master_min 0.1
+
 # reset
 set RESET_NAME "reset_in"
 
 # Floorplan
-set ICC_CORE_UTILIZATION 0.55
+set ICC_CORE_UTILIZATION 0.8
 set ICC_CORE_APECT_RATIO 1
 
 # Search Path

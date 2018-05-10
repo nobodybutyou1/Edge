@@ -22,5 +22,10 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-compile_clock_tree -high_fanout_net edge_clk_s
-compile_clock_tree -high_fanout_net edge_clk_m
+#compile_clock_tree -high_fanout_net edge_clk_s
+#compile_clock_tree -high_fanout_net edge_clk_m
+
+#set_clock_tree_references -references $buffer_cell
+clock_opt -inter_clock_balance
+set_clock_tree_options -target_skew 0.1
+compile_clock_tree -high_fanout_net "edge_clk_m edge_clk_s"

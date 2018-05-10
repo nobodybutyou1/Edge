@@ -49,8 +49,8 @@ derive_pg_connection 			\
 
 derive_pg_connection 					\
 	-tie 								\
-	-power_net  $STM_techPowerName 		\
-	-ground_net $STM_techGroundName
+	-power_net  $lib_vdd_label 		\
+	-ground_net $lib_gnd_label
 
 create_rectangular_rings 									\
 	-nets $lib_vdd_label 									\

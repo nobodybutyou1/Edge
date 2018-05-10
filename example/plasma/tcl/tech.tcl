@@ -106,3 +106,12 @@ set lib_gnd_ring_width(vertical) 2.5
 set lib_gnd_ring_width(horizontal) 2.5
 set lib_gnd_ring_offset(vertical) 3.5
 set lib_gnd_ring_offset(horizontal) 3.5
+
+
+# Additional constraint due to tile table error from icc
+# Error: Failed to read tile table property of reference librarycell C12T28SOIDV_LRBR0P6_NAND3X18_P0.  (APL-080)
+set_dont_use "C28SOI_SC_12_CORE_LR/C12T28SOIDV_LRBR0P6_NAND3X18_P0"
+
+
+
+

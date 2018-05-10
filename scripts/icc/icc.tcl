@@ -42,6 +42,6 @@ set sh_command_log_file "${POST_ICC_LOG}/command.log"
 
 #source report_cell.tcl > reports/cell.rpt
 if { !$env(DEBUG) } {
-        exit
+#   exit
 }
 

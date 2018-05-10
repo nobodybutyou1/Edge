@@ -30,10 +30,10 @@ set_route_opt_strategy 					\
 	-xtalk_reduction_loops 5 			\
 	-search_repair_loops 50 			\
 	-eco_route_search_repair_loops 10 	\
-	-route_drc_threshold 3000 			\
-	-power_aware_optimization true
-
-route_opt -effort high -power
+	-route_drc_threshold 6000 			\
+	-power_aware_optimization false
+	
+route_opt -effort low -power
 save_mw_cel -as "${DESIGN_NAME}_routed"
 
 # Report Usage

@@ -5,7 +5,7 @@
     <description>Delay matching of Logic with Pipeline Request Signal</description>
     <base>
       <path>
-        <startpoint>[remove_from_collection [all_inputs] [get_ports "Lreq Rack"]]</startpoint>
+        <startpoint>[remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]]</startpoint>
         <endpoint>$edge_clk_m_latch_in</endpoint>   
 	<exclude>EdgeExcludeNone</exclude>
       </path>
@@ -41,7 +41,7 @@
       <path>
         <startpoint>$edge_clk_m_latch_out</startpoint>
         <endpoint>$edge_clk_s_latch_in</endpoint>   
-	<exclude>[get_object_name [add_to_collection [get_cells *_mybufn] [get_ports Rack]]]</exclude>
+	<exclude>[get_object_name [add_to_collection [get_cells CT_PATH*] [get_ports Rack]]]</exclude>
       </path>
       <path>
         <startpoint>$edge_clk_m_pin</startpoint>
@@ -80,7 +80,7 @@
       <path>
         <startpoint>$edge_clk_s_latch_out</startpoint>
         <endpoint>$edge_clk_m_latch_in</endpoint>   
-	<exclude>[get_object_name [add_to_collection [get_cells *_mybufn] [all_inputs]]]</exclude>
+	<exclude>[get_object_name [add_to_collection [get_cells CT_PATH*] [all_inputs]]]</exclude>
       </path>
       <path>
         <startpoint>$edge_clk_s_pin</startpoint>

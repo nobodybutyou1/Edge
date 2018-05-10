@@ -33,14 +33,14 @@ echo "TIMESTAMP: starting bd_conv $clockstring"
 if {[list_design] == 0} {
 	source $env(EDGE_ROOT)/scripts/environment/common_setting.tcl
 	define_design_lib WORK -path $WORK_FOLDER
-	analyze -format verilog $RETIMING_NETLIST
-	elaborate $DESIGN_NAME
+	read_file -format verilog $RETIMING_NETLIST
 	read_sdc $RETIMING_SDC
 	link
 }
 current_design $DESIGN_NAME
 remove_dont_touch_network edge_clk_m
 remove_dont_touch_network edge_clk_s
+
 
 analyze -format verilog controller_notk_1req.v
 analyze -format verilog controller_tk_1req.v
@@ -52,6 +52,9 @@ set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: analyze,link,elab done $clockstring"
 
 current_design $DESIGN_NAME
+
+
+
 set_dont_touch [get_cells *]
 set_dont_touch [get_nets *]
 create_port -direction "in" {Lreq Rack}
@@ -85,7 +88,6 @@ insert_buffer CT_PATH/CTRL1/CTDBUF/dbin $buffer_cell -new_cell_name {mybuf1 mybu
 insert_buffer CT_PATH/CTRL2/CTDBUF/dbin $buffer_cell -new_cell_name {mybuf1 mybufn} -no_of_cells 2
 set_size_only [get_cells CT_PATH/CTRL*/mybuf*] -all_instance
 
-set PULSE_WIDTH [expr $CLK_PERIOD/4]
 set_min_delay -from [get_pins -of_objects CT_PATH/CTRL1/mybuf1 -filter "direction==1"] -to [get_pins -of_objects CT_PATH/CTRL1/mybufn -filter "direction==2"] $PULSE_WIDTH
 set_min_delay -from [get_pins -of_objects CT_PATH/CTRL2/mybuf1 -filter "direction==1"] -to [get_pins -of_objects CT_PATH/CTRL2/mybufn -filter "direction==2"] $PULSE_WIDTH
 set_max_delay -from [get_pins -of_objects CT_PATH/CTRL1/mybuf1 -filter "direction==1"] -to [get_pins -of_objects CT_PATH/CTRL1/mybufn -filter "direction==2"] [expr $PULSE_WIDTH*1.10]
@@ -95,6 +97,20 @@ set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: insert,set marker buffers done $clockstring"
 
 set_cost_priority min_delay 
+
+
+# set constraint from a_req to dff_clk
+
+set_false_path -from [get_pins CT_PATH/CTRL1/dff_notk/clk] -to [get_pins CT_PATH/CTRL1/dff_notk/dff_out]
+set_false_path -from [get_pins CT_PATH/CTRL2/dff_tk/clk] -to [get_pins CT_PATH/CTRL2/dff_tk/dff_out]
+set_false_path -from [get_pins CT_PATH/CELE_req/a] -to [get_pins CT_PATH/CELE_req/out]
+set_false_path -from [get_pins CT_PATH/CELE_req/b] -to [get_pins CT_PATH/CELE_req/out]
+set_false_path -from [get_pins CT_PATH/CELE_ack/a] -to [get_pins CT_PATH/CELE_req/out]
+set_false_path -from [get_pins CT_PATH/CELE_ack/b] -to [get_pins CT_PATH/CELE_req/out]
+set_max_delay -from [get_pins CT_PATH/CTRL1/a_req] -to [get_pins CT_PATH/CTRL1/dff_clk] [expr $PULSE_WIDTH*0.50]
+set_max_delay -from [get_pins CT_PATH/CTRL2/a_req] -to [get_pins CT_PATH/CTRL2/dff_clk] [expr $PULSE_WIDTH*0.50]
+
+#compile
 
 compile_ultra -no_autoungroup
 ungroup -all -flatten
@@ -113,8 +129,45 @@ echo "TIMESTAMP: compile_ultra, write_file done $clockstring"
 
 source fix.tcl
 
+#### delete the delay line from Lreq to master controlller ####
+set last_buf [get_cells *in_s1_mybufn]
+set i 0
+while 1 {
+	# grab the cell connected to Lreq port
+    set lreqfo [all_fanout -from Lreq -only_cells -level 1]
+	# check if the cell is the last delay element in delay line
+	set result [expr {[get_object_name $last_buf] eq [get_object_name $lreqfo]}]
+	# set the input and output net of the cell connected to Lreq
+	set innet [get_nets -of_objects [get_pins -of_objects $lreqfo -filter "direction == 1"]]
+	set outnet [get_nets -of_objects [get_pins -of_objects $lreqfo -filter "direction == 2"]]
+	# remove the cell connected to Lreq, and re-build the delay line
+	disconnect_net $innet [get_ports Lreq]
+	disconnect_net $outnet [get_pins -of_objects $lreqfo -filter "direction == 2"]
+	connect_net $outnet [get_ports Lreq] 
+	remove_cell $lreqfo
+	# break the loop if the last delay element has been deleted, or it takes 1000 times in the loop
+    if {$result} break
+	incr i
+	if {$i > 1000} {
+		error "The system runs into error while deleting the delay line from Lreq to master controller"
+	}
+}
+
+set_min_delay -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in [expr $PULSE_WIDTH*1.10 + $extra_in_master_min]
+
+write_file -hierarchy -format verilog -out $FIXDELAY_NETLIST_DEL
+write_sdc $FIXDELAY_SDC_DEL
+
+
+
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: fix done $clockstring"
+
+report_timing -delay_type min -from $edge_clk_s_latch_out -to $edge_clk_m_latch_in > clk_s_latch_out_to_clk_m_latch_in.timing
+report_timing -delay_type min -from $edge_clk_m_latch_out -to $edge_clk_s_latch_in > clk_m_latch_out_to_clk_s_latch_in.timing
+report_timing -delay_type min -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in > all_inputs_to_clk_m_latch_in.timing
+report_timing -delay_type min -from $edge_clk_s_latch_out -to [all_outputs] > clk_s_latch_out_to_all_outputs.timing
+
 
 if { !$env(DEBUG) } {
         exit

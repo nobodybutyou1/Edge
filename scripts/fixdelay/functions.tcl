@@ -56,7 +56,7 @@ proc custom_report_timing {from {to "*"} {verb 0} {type max} {nworst 1}} {
 
 # Functions to get the max delay from a collection of paths
 # Get worst delay from (to) (type) (verbose)
-proc custom_get_delay {{from *} {to *} {exclude ""} {type max} {debug 0}} { 
+proc custom_get_delay {{from *} {to *} {exclude ""} {type max} {debug 1}} { 
 	if { $debug == 1} { echo [format "DEBUG custom_get_delay: from: %s  // to %s " $from $to  ] }
 
 	# Get one path
@@ -283,7 +283,8 @@ proc custom_report_existent {list} {
 proc custom_set_min_delay {from to exclude delay {debug 0}} {
 	set startpin $from
 	set endpin $to
-	set delay_value $delay
+	global PULSE_WIDTH
+	set delay_value [expr max($delay,[expr $PULSE_WIDTH*1.10])]
 
 	if { $delay_value <= 0} {return 1}
 

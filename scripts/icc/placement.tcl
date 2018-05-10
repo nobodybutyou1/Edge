@@ -34,9 +34,9 @@ preroute_standard_cells 			\
 	-cell_instance_filter_mode off 	\
 	-voltage_area_filter_mode off
 
-set_power_options	\
-	-leakage true 	\
-	-dynamic true
+#set_power_options	\
+#	-leakage true 	\
+#	-dynamic true
 
 place_opt 			\
 	-effort high 	\

@@ -94,14 +94,12 @@ set edge_clk_s_latch_out [get_object_name [get_pins -of_objects $edge_clk_s_latc
 remove_ideal_network [get_pins -of_objects edge_clk_m -filter "direction==out"]
 remove_ideal_network [get_pins -of_objects edge_clk_s -filter "direction==out"]
 
-set_max_delay 10.0 -from [get_pins -of_objects $edge_clk_m_latch_out] -to [get_pins -of_objects $edge_clk_s_latch_in]
-set_max_delay 10.0 -from [get_pins -of_objects $edge_clk_s_latch_out] -to [get_pins -of_objects $edge_clk_m_latch_in]
 
 set_size_only *mybuf1
 set_size_only *mybufn
 
 # Prefer Clock Lib cells to fulfull min_delay constraints
-set_prefer $normal_cell
+#set_prefer $normal_cell
 set_prefer -min $hold_cell
 
 # Increase priority of min_delay cosntraints 
