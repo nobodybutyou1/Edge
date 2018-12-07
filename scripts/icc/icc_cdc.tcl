@@ -22,19 +22,36 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#compile_clock_tree -high_fanout_net edge_clk_s
-#compile_clock_tree -high_fanout_net edge_clk_m
 
-#set_clock_tree_references -references $buffer_cell
-clock_opt -inter_clock_balance  -concurrent_clock_and_data
-set M3Width [expr 2 *[get_attribute  [get_layers M3] defaultWidth]]
-set M4Width [expr 2 *[get_attribute  [get_layers M4] defaultWidth]]
-set pitch [get_attribute  [get_layers M4] pitch]
-define_routing_rule M3_M4NDR -widths "M4 $M3Width  M5 $M4Width" -spacings  " M4 $pitch M5 $pitch"
+source $env(EDGE_ROOT)/scripts/environment/common_setting.tcl
 
-set_clock_tree_references -references $ctree  
-set_clock_tree_options -max_fanout 25 -max_transition [expr 0.1 * $CLK_PERIOD] -ocv_clustering true -target_skew 0.1 -routing_rule M3_M4NDR -target_early_delay [expr 0.35 * $CLK_PERIOD] -routing_rule M3_M4NDR 
+source functions.tcl
+source ACSetup.tcl
 
-compile_clock_tree -high_fanout_net [get_net edge*/edge_clk_*]
+# Create functions placeholder
+proc fix_timing {} {
+	echo "You must run 'source (DCT/IC)Flow.tcl' before trying to fix timing."
+}
 
-#compile_clock_tree -high_fanout_net "edge_clk_m edge_clk_s"
+# add IO constraints
+set HALF_PERIOD [expr $CLK_PERIOD/2]
+create_clock -name "clk_put" -period $CLK_PERIOD -waveform [list 0 $HALF_PERIOD]
+create_clock -name "clk_get" -period $CLK_PERIOD -waveform [list 0 $HALF_PERIOD]
+set_input_delay [expr 0.1*$CLK_PERIOD] -clock "clk_put" -clock_fall [all_inputs]
+set_input_transition [expr 0.1*$CLK_PERIOD] [all_inputs]
+set_load 0.02672 [all_outputs] 
+set_output_delay [expr 0.1*$CLK_PERIOD] -clock "clk_get" [all_outputs]
+
+
+source ICFlow_cdc.tcl
+
+fix_timing_iterative
+write_design
+write_reports
+set sh_command_log_file "${POST_ICC_LOG}/command.log"
+#file copy -force filenames.log ${POST_ICC_LOG}/filenames.log
+#source report_cell.tcl > reports/cell.rpt
+if { !$env(DEBUG) } {
+#   exit
+}
+

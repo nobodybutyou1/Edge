@@ -27,8 +27,10 @@
 
 
 
-set DESIGN_ACDC_CONST "$env(EDGE_ROOT)/common/general.xml"
-set DESIGN_ACDC_CONST_ICC "$env(EDGE_ROOT)/common/general_icc.xml"
+set DESIGN_ACDC_CONST "$env(EDGE_ROOT)/common/general_noloop.xml"
+set DESIGN_ACDC_CONST_ICC "$env(EDGE_ROOT)/common/general_icc_noloop.xml"
+set DESIGN_ACDC_CONST_ICC_CDC "$env(EDGE_ROOT)/common/general_icc_cdc_noloop.xml"
+
 set TEST_OUT_FOLDER "test"
 # DC Output Files
 set SYNC_SYN_OUT_FOLDER   "sync_syn"
@@ -72,6 +74,14 @@ set FIXDELAY_LOG "${FIXDELAY_OUT_FOLDER}/logs"
 
 set FIXDELAY_NETLIST_DEL   "${FIXDELAY_OUT_FOLDER}/${DESIGN_NAME}_DEL.v"
 set FIXDELAY_SDC_DEL   "${FIXDELAY_OUT_FOLDER}/${DESIGN_NAME}_DEL.sdc"
+
+# cdc output files
+set CDC_OUT_FOLDER "cdc"
+set CDC_NETLIST "${CDC_OUT_FOLDER}/${DESIGN_NAME}.v"
+set CDC_SDC "${CDC_OUT_FOLDER}/${DESIGN_NAME}.sdc"
+set CDC_SDF "${CDC_OUT_FOLDER}/${DESIGN_NAME}.sdf"
+set CDC_LOG "${CDC_OUT_FOLDER}/logs"
+
 
 # ICC Output Files
 set POST_ICC_OUT_FOLDER   "icc"

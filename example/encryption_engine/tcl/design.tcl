@@ -26,10 +26,51 @@
 
 
 
-set WORK_FOLDER "work"
+#####################################
+# Tool Settings
+#####################################
+# Number of cores during synthesis
+set NUM_CORES 8
 
-set search_path [concat $search_path $env(EDGE_ROOT)/common $env(EDGE_ROOT)/scripts/add_controller $env(EDGE_ROOT)/scripts/ff2latch $env(EDGE_ROOT)/scripts/retiming $env(EDGE_ROOT)/scripts/sync_syn $env(EDGE_ROOT)/scripts/environment $env(EDGE_ROOT)/scripts/fixdelay $env(EDGE_ROOT)/scripts/cdc $env(EDGE_ROOT)/scripts/icc]
+# Continue after error is reported (1- YES/ 0- NO)
+set CONT_WITH_ERROR 0
 
-source $env(EDGE_DESIGN_TCL)
-source $env(EDGE_TECH_TCL)
-source filename.tcl
+
+#####################################
+# Design Settings
+#####################################
+# Name of top-level instance
+set DESIGN_NAME "encryption_engine"
+
+# Input Files
+#set DESIGN_ACDC_CONST "./constraints/${DESIGN_NAME}.xml"
+set DESIGN_FOLDER "$env(EDGE_ROOT)/example/encryption_engine/rtl"
+
+
+# Clock
+set CLK_PERIOD "2"
+set CLOCK_NAME "clk"
+
+# Input and output delay coefficient. X*CLK_PERIOD
+set Xin "0.1"
+set Xout "0.1"
+
+# for S2A and A2S; S2Abit: number of inputs of design  A2Sbit: number of outputs of design 
+set S2Abit "245"
+set A2Sbit "66"
+
+# Pulse width for master and slave clocks
+set PULSE_WIDTH [expr $CLK_PERIOD/4]
+
+# extra margin from input to master latches
+set extra_in_master_min 0.1
+
+# reset
+set RESET_NAME "reset_in"
+
+# Floorplan
+set ICC_CORE_UTILIZATION 0.8
+set ICC_CORE_APECT_RATIO 1
+
+# Search Path
+set search_path [concat $search_path $DESIGN_FOLDER]

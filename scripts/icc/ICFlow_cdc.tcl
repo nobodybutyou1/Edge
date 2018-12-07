@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-source pre_icc.tcl
+source pre_icc_cdc.tcl
 source floorplan.tcl
 source placement.tcl
 ##########################################################################################
 # generated blanced buffer tree
 ##########################################################################################
-source buffer_tree.tcl
+source buffer_tree_cdc.tcl
 
 source routing.tcl
 
@@ -37,8 +37,9 @@ source routing.tcl
 # Load ACDC Delay Line Insertion Environment
 ##########################################################################################
 # Read Relative Timing Constraints
+# Check and see if the self loop exists
 if { [file exists $DESIGN_ACDC_CONST_ICC] == 1} {
-	AC_load_constraints $DESIGN_ACDC_CONST_ICC > $POST_ICC_LOG/load_constraints.log
+	AC_load_constraints $DESIGN_ACDC_CONST_ICC_CDC > $POST_ICC_LOG/load_constraints.log
 	echo "AC Constraints set. You can run 'AC_report_constraints', fix_timing', 'fix_timing_iterative' or 'write_design'."
 } else {
 	error "AC Constraints not found."	

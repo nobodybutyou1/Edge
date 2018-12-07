@@ -1,0 +1,1030 @@
+icc_shell> read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+Error: No Milkyway library is open. (UID-666)
+icc_shell> read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+Error: No Milkyway library is open. (UID-666)
+icc_shell> read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+Error: No Milkyway library is open. (UID-666)
+icc_shell> import_designs  /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc -format ddc
+Error: No Milkyway library is open. (UID-666)
+0
+icc_shell> man set_clock_tree_options
+2.  Synopsys Commands                                        Command Reference
+                            set_clock_tree_options
+
+NAME
+       set_clock_tree_options
+              Specifies  clock  tree  synthesis  constraints  and  options for
+              clocks in the design.
+
+SYNTAX
+       status set_clock_tree_options
+               [-clock_trees clock_sources]
+               [-layer_list layer_names]
+               [-layer_list_for_sinks layer_names
+               | -use_leaf_routing_rule_for_sinks count]
+               [-target_early_delay insertion_delay]
+               [-target_skew skew]
+               [-max_capacitance capacitance]
+               [-max_transition transition_time]
+               [-max_fanout fanout]
+               [-max_rc_delay_constraint delay
+               | -max_rc_scale_factor scale_factor]
+               [-routing_rule ndr_rule
+               | -use_default_routing_for_sinks count]
+               [-leaf_max_transition transition_time]
+               [-use_leaf_max_transition_on_exceptions true | false]
+               [-use_leaf_max_transition_on_macros true | false]
+               [-routing_rule_for_sinks ndr_rule
+               | -use_leaf_routing_rule_for_sinks count]
+               [-buffer_relocation true | false]
+               [-buffer_sizing true | false]
+               [-gate_relocation true | false]
+               [-gate_sizing true | false]
+               [-logic_level_balance true | false]
+               [-ocv_clustering true | false]
+               [-ocv_path_sharing true | false]
+               [-advanced_drc_fixing true | false]
+               [-config_file_read file_name]
+               [-config_file_write file_name]
+               [-insert_boundary_cell true | false]
+               [-operating_condition min | min_max | max]
+
+   Data Types
+       clock_sources       collection
+       layer_names         list
+       count               integer
+       insertion_delay     float
+       skew                float
+       capacitance         float
+       transition_time     float
+       fanout              integer
+       delay               float
+       scale_factor        float
+       ndr_rule            string
+       file_name           string
+
+ARGUMENTS
+       -clock_trees clock_sources
+              Specifies the clock trees on which to set  the  specified  clock
+              tree  options.   You specify the clock trees by using the source
+              of each clock tree. The source can be a top-level  design  input
+              port, a hierarchical port, or a library cell instance pin.
+
+              If  you  do  not  specify the -clock_trees option, the specified
+              clock tree options apply to all clocks defined  in  the  design.
+              Note  that  some clock tree options are global options and apply
+              to all clocks in  the  design  regardless  of  the  -clock_trees
+              option.  These  global  options are noted in the option descrip-
+              tion.
+
+       -layer_list layer_names
+              Specifies the layers that can be used for routing the clock nets
+              in  the  specified  clock  trees.  If the list has more than two
+              elements, the lower layer should appear before the upper  layer.
+
+              By default, all routing layers can be used for clock nets.
+
+       -layer_list_for_sinks layer_names
+              Specifies the layers that can be used for routing the clock leaf
+              nets in the specified clock trees.  If the list  has  more  than
+              two  elements,  the  lower  layer should appear before the upper
+              layer. This option overrides the -layer_list option when routing
+              leaf-level clock nets, if both options are specified.
+
+       -use_leaf_routing_rule_for_sinks count
+              Forces the leaf routing rule or leaf layerlist to be used on the
+              leaf nets that drive the clock tree sinks and nets at the bottom
+              n-1 levels of the clock tree. A net is considered as leaf net if
+              it drives at least one flip-flop or latch clock input  pin  that
+              is  a  sink  pin or float or stop pin.  Any pins with exclude or
+              don't touch subtree exceptions, as well as non-flip-flop or non-
+              latch  clock  input  pins with float or stop exceptions, are not
+              treated as sink pins of the clock tree for  this  purpose.   For
+              example,  a  net that drives only one non-flip-flop float pin is
+              not treated as a leaf net for this purpose.
+
+              The default is 0, and the maximum allowed is 2.
+
+              This option is valid only if the -routing_rule_for_sinks or  the
+              -layer_list_for_sinks option is specified.
+
+       -target_early_delay insertion_delay
+              Specifies  the minimum insertion delay constraint in design unit
+              for the specified clock trees.
+
+              When you specify this option, the clock  tree  synthesis  engine
+              builds  an  initial optimized clock tree. If the insertion delay
+              of the longest path of this clock tree is smaller than the spec-
+              ified  value,  the  clock  tree synthesis engine adds a chain of
+              cells from the reference list as needed to meet this delay.
+
+              By default, the target early delay is 0.
+
+       -target_skew skew
+              Specifies the required value for maximum skew in design unit for
+              the specified clock trees.
+
+              After  the tool meets this skew target, the optimization concen-
+              trates more on other QoR goals,  such  as  insertion  delay  and
+              area).
+
+              By default, the target skew is 0.
+
+       -max_capacitance capacitance
+              Specifies the maximum capacitance design rule constraint in main
+              library units for the specified clock trees.
+
+              This value takes precedence over the  maximum  capacitance  con-
+              straint  set  on the design, as well as over the one coming from
+              the library. This constraint  is  used  when  reporting  maximum
+              capacitance  violations  during clock tree synthesis and is also
+              used to control maximum capacitance  DRC  fixing  beyond  excep-
+              tions.
+
+              By default, the maximum capacitance is 0.6 pf.
+
+       -max_transition transition_time
+              Specifies  the maximum transition time design rule constraint in
+              main library unit for the buffers and inverters used while  com-
+              piling the specified clock trees.
+
+              This  value  takes  precedence  over the maximum transition time
+              constraint set on the design, as well as  over  the  one  coming
+              from the library, but can be overridden on all instances of spe-
+              cific types of buffers and inverters in the clock tree by speci-
+              fying   a   different   value   for   this   constraint  on  the
+              set_clock_tree_references command line. The clock tree root cell
+              and  clock-gating  cells  present  on  the clock network are not
+              affected  by  the  set_clock_tree_references  design  rule  con-
+              straints  unless they are instances of buffers or inverters with
+              overridden design rule constraints.
+
+              By default, the maximum transition time is 0.5 ns.
+
+       -max_fanout fanout
+              Specifies the maximum fanout  design  rule  constraint  for  the
+              cells in the specified clock trees.
+
+              By  default,  the maximum fanout constraint set on the design by
+              using the set_max_fanout command, as well as the one coming from
+              the library are ignored during clock tree synthesis.
+
+              By default, the maximum fanout is 2000.
+
+       -max_rc_delay_constraint delay
+              Specifies  the  maximum RC delay constraint from a driver pin to
+              each receiver pin while compiling  the  specified  clock  trees.
+              This  constraint  is  for  the  delay  from a driver pin to each
+              receiver pin.
+
+              By default, the maximum RC delay constraint is disabled.
+
+              This option is mutually exclusive with the  -max_rc_scale_factor
+              option.
+
+       -max_rc_scale_factor scale_factor
+              Enables  the  maximum  RC delay constraint by specifying a scale
+              factor while compiling the specified clock trees.  The  true  RC
+              delay  constraint is determined by multiplying this scale factor
+              by an internally derived RC delay. This constraint  is  for  the
+              delay from a driver pin to each receiver pin.
+
+              By default, the scale factor is not set and the maximum RC delay
+              constraint is disabled.
+
+              This option is mutually exclusive  with  the  -max_rc_delay_con-
+              straint option.
+
+       -routing_rule ndr_rule
+              Specifies  the  nondefault  routing  rule to be used for routing
+              nets in the specified clock trees.
+
+              The default is to use the default routing  rule  for  all  clock
+              nets.
+
+       -use_default_routing_for_sinks count
+              Forces the default routing rule to be used on the leaf nets that
+              drive the clock tree sinks and nets at the bottom n-1 levels  of
+              the  clock tree. A net is considered as leaf net if it drives at
+              least one flip-flop or latch clock input pin  that  is  a  sink,
+              float,  or  stop pin.  Any pins with exclude or don't touch sub-
+              tree exceptions, as well as  non-flip-flop  or  non-latch  clock
+              input  pins  with  float  or stop exceptions, are not treated as
+              sink pins of the clock tree for this purpose.   For  example,  a
+              net  that drives only one non-flip-flop float pin is not treated
+              as a leaf net for this purpose.
+
+              The default is 0.
+
+              This option is valid only if the -routing_rule option is  speci-
+              fied.
+
+       -leaf_max_transition transition_time
+              Specifies  the maximum transition time design rule constraint in
+              main library unit for the buffers and inverters used while  syn-
+              thesizing  the leaf nets during the compilation of the specified
+              clock trees. A leaf net is defined as a  net  which  drives  the
+              clock pin of at least one register, latch, or multibit register.
+
+              This value must be tighter than the  value  specified  with  the
+              -max_transition  option of the set_clock_tree_options command or
+              the set_max_transition command.
+
+              By default, the maximum transition constraint for the leaf  nets
+              is equal to the maximum transition constraint of the rest of the
+              clock tree.
+
+       -use_leaf_max_transition_on_exceptions true | false
+              Specifies if the maximum transition constraint applied  on  leaf
+              level  nets by using the -leaf_max_transition option should also
+              apply on nets connected to pins having exceptions on them.  This
+              option  is  applicable only when the -leaf_max_transition option
+              is specified.
+
+              The default is false.
+
+       -use_leaf_max_transition_on_macros true | false
+              Specifies if the maximum transition constraint applied  on  leaf
+              level  nets by using the -leaf_max_transition option should also
+              apply on nets connected to pins of macro cells. This  option  is
+              applicable  only  when the -leaf_max_transition option is speci-
+              fied.
+
+              The default is false.
+
+       -routing_rule_for_sinks ndr_rule
+              Specifies the nondefault routing rule to  be  used  for  routing
+              clock  leaf nets in the specified clock trees. This option over-
+              rides the -routing_rule option  when  routing  leaf-level  clock
+              nets, if both options are specified.
+
+       -buffer_relocation true | false
+              Enables  and  disables  buffer relocation on the specified clock
+              trees during the clock tree optimization that is performed  dur-
+              ing  initial  clock  tree synthesis.  Note that this option does
+              not  control  buffer   relocation   performed   by   the   opti-
+              mize_clock_tree command.
+
+              The default is true.
+
+       -buffer_sizing true | false
+              Enables  or  disables buffer sizing on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock  tree synthesis. Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is true.
+
+       -gate_relocation true | false
+              Enables or disables gate relocation on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock tree synthesis.  Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is true.
+
+       -gate_sizing true | false
+              Enables  or  disables  gate  sizing on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock tree synthesis.  Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is false.
+
+       -logic_level_balance true | false
+              Enables  or disables building the clock tree with balanced logic
+              levels.
+
+              The default is false.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -ocv_clustering true | false
+              Enables  or disables on-chip-variation-aware register clustering
+              for capturing timing-critical endpoints, to improve  clock  path
+              sharing  between  the  relatively  more timing-critical register
+              pairs. Any previous setup that can affect  the  timing  measured
+              between  register  pairs,  such  as  the  set_clock_latency  and
+              set_clock_uncertainty command, might affect the clustering  cri-
+              teria and accordingly affect the resulting clock trees.
+
+              The default is false.
+
+       -ocv_path_sharing true | false
+              Enables  or disables on-chip-variation-aware clock path sharing.
+              When enabled, the tool attempts to  generate  clock  trees  with
+              more shared paths among clock paths driving different clock end-
+              points. The increase of path-sharing can help to decrease  clock
+              skew  caused  by  on-chip-variation.  Clock  insertion delay can
+              increase when this option is enabled.
+
+              The default is true.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -advanced_drc_fixing true | false
+              Enables  or  disables  the  advanced DRC fixing feature in clock
+              tree synthesis and optimization.
+
+              The default is false.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -config_file_read file_name
+              Directs  clock tree synthesis to build the clock trees according
+              to the configuration  defined  in  the  specified  configuration
+              file.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -config_file_write file_name
+              Directs clock tree synthesis to write out  the  specified  clock
+              tree configuration file after performing clock tree synthesis.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -insert_boundary_cell true | false
+              Enables or disables the insertion of boundary cells  near  clock
+              input ports for block-level designs.
+
+              The default is false.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -operating_condition  min | min_max | max
+              Sets the operating condition at which clock tree synthesis  syn-
+              thesizes the clock trees.
+
+              By default, the operating condition is set to max.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+DESCRIPTION
+       The general flow for synthesizing a clock tree is as follows:
+
+      1. Trace the initial clock tree structure (based on the initial  netlist
+         and  SDC commands). Based on the results, proceed to step 2 below, if
+         needed.
+
+      2. Define the clock tree exceptions (the set_clock_tree_exceptions  com-
+         mand).
+
+      3.  Specify  the buffers and inverters to use in the synthesis and opti-
+         mization of the clock tree (the set_clock_tree_references command).
+
+      4. Synthesize the clock tree and update  the  design  netlist  with  the
+         legal placement results (the compile_clock_tree command).
+
+       A  clock  tree  structure is defined from the pin of an instance called
+       the source pin. It is assumed that the clock tree is to be  constructed
+       from this source pin until leaf pins of sequential elements are encoun-
+       tered. Exceptions are used to modify this assumption. After clock  tree
+       exceptions  have  been added or modified, the clock tree can be synthe-
+       sized.
+
+       At minimum, specify the source pin of the clock tree to create an  ini-
+       tial clock tree structure. (If source pin is not specified, the command
+       defines the settings for all clock trees in the design.) After the def-
+       inition  of  the clock tree has been created, other clock tree commands
+       use the same source pin to do one or more of the following to the clock
+       tree:
+
+       o Add constraints to it
+       o Add exceptions to it
+       o Report on it
+       o Synthesize it
+
+       The  -clock_trees  option defines the pin that is the root, or starting
+       point, of the clock tree. It must be a pin of a leaf cell, a hierarchi-
+       cal port, or an input port of the top-level design.
+
+       The set_clock_tree_references command specifies the library buffers and
+       inverters to use for clock tree synthesis.
+
+   Tracing Rules
+       The following section assumes familiarity with the concepts  of  timing
+       arcs,  timing  arc  unateness, combinational arcs, and sequential arcs.
+       The following set of rules is applied to  determine  which  clock  tree
+       nets  in  the  transitive  fanout  of the driving pin are buffered, and
+       which load pins of those nets are considered as balance  points  during
+       clock tree synthesis. The general rule is to gather a set of clock tree
+       nets by iteratively tracing through cells in the clock network.   Trac-
+       ing  starts at the net driven by the root pin and continues through the
+       owning cells of its load pins when they meet the following conditions:
+
+       o The output pin has at least one fanout.
+       o The output pin is not on a pad net, which is a net between an I/O pad
+         cell and a top-level port, such as a bonding net.
+       o  There is at least one combinational timing arc between the input pin
+         on the clock path and the output pin or there is a sequential  clock-
+         to-output  data  arc and the related output is the source of a gener-
+         ated clock.
+       o There is no three-state enable or  disable  timing  arc  between  the
+         input pin on the clock path and the output pin.
+
+       If  more  than  one output on a cell meets these conditions, clock tree
+       synthesis selects a random pin and generates a warning message indicat-
+       ing which pin was chosen. Use the set_disable_timing command to disable
+       as many unwanted timing arcs in the cell as needed to force a  specific
+       output  pin  to  be  selected.  When both sequential arcs (to generated
+       clock source pins) and combinational arcs  can  be  traced,  additional
+       warning messages are issued.
+
+       When  clock  tree synthesis traces through a cell to an output pin, the
+       driven net becomes a clock tree  net  and  the  rules  are  iteratively
+       applied  to  all  its  load pins to determine the other clock tree nets
+       among the transitive fanout of this net.
+
+       Clock tree synthesis does not trace through a clock positive-edge  arc,
+       a  clock negative-edge arc, or a three-state enable arc. All other com-
+       binational cell timing arcs are traced through.  This  includes  timing
+       arcs of multiplexer cells or combinational arcs from data pins of latch
+       cells (transparent mode). Sequential clock-gating cells are also traced
+       through if there is a combinational arc connected to the clock path. By
+       default, all nonclock pins of sequential elements,  except  three-state
+       enable  or  disable  pins,  become  exclude  pins  unless  they have an
+       explicit stop pin exception. For example, the following types  of  pins
+       are implicitly excluded:
+
+       o Pins of combinational cells without fanout
+       o Pins of combinational cells with disabled timing arcs
+       o Top-level output ports
+       o Input pins of pad cells
+       o Data pins of flip-flops or memories
+
+       The -exceptions option of the report_clock_tree command reports implic-
+       itly excluded pins as inferred.
+
+       Applying the set_clock_tree_exceptions command with appropriate options
+       to  some  pins in the transitive fanout of the clock root modifies this
+       default behavior.
+
+   Multicorner-Multimode Support
+       This command has no dependency on scenario-specific information.
+
+EXAMPLES
+       The following example sets a target skew  of  0.050  ns  only  for  the
+       my_clock clock tree:
+
+         prompt> set_clock_tree_options \
+                 -clock_trees my_clock -target_skew 0.050
+
+       The following example adds an exception to exclude a fanout pin Reg0/CP
+       from examination for skew optimization and analysis. This creates a new
+       clock tree structure that takes into account this new exception:
+
+         prompt> set_clock_tree_exceptions -exclude_pins [get_pins Reg0/CP]
+
+       The  following  example  adds  an  exception to define pin Ram0/we as a
+       float pin:
+
+         prompt> set_clock_tree_exceptions -float_pins [get_pins RAM0/we]
+
+       The following example reports the current definition of the CLK1  clock
+       tree:
+
+         prompt> report_clock_tree -clock_trees CLK1
+
+SEE ALSO
+       compile_clock_tree(2)
+       report_clock_tree(2)
+       set_clock_tree_optimization_options(2)
+       set_clock_tree_exceptions(2)
+       set_clock_tree_references(2)
+       set_disable_timing(2)
+
+                            Version K-2015.06
+            Copyright (c) 2015 Synopsys, Inc. All rights reserved.
+icc_shell> set_clock_uncertainty  [get_clocks edge_clk*]
+Error: Current design is not defined. (UID-4)
+Error: Can't find clocks matching 'edge_clk*'. (UID-109)
+Error: value '' for option 'uncertainty' not of type 'float' (CMD-009)
+icc_shell> set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+Error: can't read "CLK_PERIOD": no such variable
+        Use error_info for more info. (CMD-013)
+icc_shell> set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+Error: can't read "CLK_PERIOD": no such variable
+        Use error_info for more info. (CMD-013)
+icc_shell> get_cells
+Error: Current design is not defined. (UID-4)
+icc_shell> man set_clock_tree_options
+2.  Synopsys Commands                                        Command Reference
+                            set_clock_tree_options
+
+NAME
+       set_clock_tree_options
+              Specifies  clock  tree  synthesis  constraints  and  options for
+              clocks in the design.
+
+SYNTAX
+       status set_clock_tree_options
+               [-clock_trees clock_sources]
+               [-layer_list layer_names]
+               [-layer_list_for_sinks layer_names
+               | -use_leaf_routing_rule_for_sinks count]
+               [-target_early_delay insertion_delay]
+               [-target_skew skew]
+               [-max_capacitance capacitance]
+               [-max_transition transition_time]
+               [-max_fanout fanout]
+               [-max_rc_delay_constraint delay
+               | -max_rc_scale_factor scale_factor]
+               [-routing_rule ndr_rule
+               | -use_default_routing_for_sinks count]
+               [-leaf_max_transition transition_time]
+               [-use_leaf_max_transition_on_exceptions true | false]
+               [-use_leaf_max_transition_on_macros true | false]
+               [-routing_rule_for_sinks ndr_rule
+               | -use_leaf_routing_rule_for_sinks count]
+               [-buffer_relocation true | false]
+               [-buffer_sizing true | false]
+               [-gate_relocation true | false]
+               [-gate_sizing true | false]
+               [-logic_level_balance true | false]
+               [-ocv_clustering true | false]
+               [-ocv_path_sharing true | false]
+               [-advanced_drc_fixing true | false]
+               [-config_file_read file_name]
+               [-config_file_write file_name]
+               [-insert_boundary_cell true | false]
+               [-operating_condition min | min_max | max]
+
+   Data Types
+       clock_sources       collection
+       layer_names         list
+       count               integer
+       insertion_delay     float
+       skew                float
+       capacitance         float
+       transition_time     float
+       fanout              integer
+       delay               float
+       scale_factor        float
+       ndr_rule            string
+       file_name           string
+
+ARGUMENTS
+       -clock_trees clock_sources
+              Specifies the clock trees on which to set  the  specified  clock
+              tree  options.   You specify the clock trees by using the source
+              of each clock tree. The source can be a top-level  design  input
+              port, a hierarchical port, or a library cell instance pin.
+
+              If  you  do  not  specify the -clock_trees option, the specified
+              clock tree options apply to all clocks defined  in  the  design.
+              Note  that  some clock tree options are global options and apply
+              to all clocks in  the  design  regardless  of  the  -clock_trees
+              option.  These  global  options are noted in the option descrip-
+              tion.
+
+       -layer_list layer_names
+              Specifies the layers that can be used for routing the clock nets
+              in  the  specified  clock  trees.  If the list has more than two
+              elements, the lower layer should appear before the upper  layer.
+
+              By default, all routing layers can be used for clock nets.
+
+       -layer_list_for_sinks layer_names
+              Specifies the layers that can be used for routing the clock leaf
+              nets in the specified clock trees.  If the list  has  more  than
+              two  elements,  the  lower  layer should appear before the upper
+              layer. This option overrides the -layer_list option when routing
+              leaf-level clock nets, if both options are specified.
+
+       -use_leaf_routing_rule_for_sinks count
+              Forces the leaf routing rule or leaf layerlist to be used on the
+              leaf nets that drive the clock tree sinks and nets at the bottom
+              n-1 levels of the clock tree. A net is considered as leaf net if
+              it drives at least one flip-flop or latch clock input  pin  that
+              is  a  sink  pin or float or stop pin.  Any pins with exclude or
+              don't touch subtree exceptions, as well as non-flip-flop or non-
+              latch  clock  input  pins with float or stop exceptions, are not
+              treated as sink pins of the clock tree for  this  purpose.   For
+              example,  a  net that drives only one non-flip-flop float pin is
+              not treated as a leaf net for this purpose.
+
+              The default is 0, and the maximum allowed is 2.
+
+              This option is valid only if the -routing_rule_for_sinks or  the
+              -layer_list_for_sinks option is specified.
+
+       -target_early_delay insertion_delay
+              Specifies  the minimum insertion delay constraint in design unit
+              for the specified clock trees.
+
+              When you specify this option, the clock  tree  synthesis  engine
+              builds  an  initial optimized clock tree. If the insertion delay
+              of the longest path of this clock tree is smaller than the spec-
+              ified  value,  the  clock  tree synthesis engine adds a chain of
+              cells from the reference list as needed to meet this delay.
+
+              By default, the target early delay is 0.
+
+       -target_skew skew
+              Specifies the required value for maximum skew in design unit for
+              the specified clock trees.
+
+              After  the tool meets this skew target, the optimization concen-
+              trates more on other QoR goals,  such  as  insertion  delay  and
+              area).
+
+              By default, the target skew is 0.
+
+       -max_capacitance capacitance
+              Specifies the maximum capacitance design rule constraint in main
+              library units for the specified clock trees.
+
+              This value takes precedence over the  maximum  capacitance  con-
+              straint  set  on the design, as well as over the one coming from
+              the library. This constraint  is  used  when  reporting  maximum
+              capacitance  violations  during clock tree synthesis and is also
+              used to control maximum capacitance  DRC  fixing  beyond  excep-
+              tions.
+
+              By default, the maximum capacitance is 0.6 pf.
+
+       -max_transition transition_time
+              Specifies  the maximum transition time design rule constraint in
+              main library unit for the buffers and inverters used while  com-
+              piling the specified clock trees.
+
+              This  value  takes  precedence  over the maximum transition time
+              constraint set on the design, as well as  over  the  one  coming
+              from the library, but can be overridden on all instances of spe-
+              cific types of buffers and inverters in the clock tree by speci-
+              fying   a   different   value   for   this   constraint  on  the
+              set_clock_tree_references command line. The clock tree root cell
+              and  clock-gating  cells  present  on  the clock network are not
+              affected  by  the  set_clock_tree_references  design  rule  con-
+              straints  unless they are instances of buffers or inverters with
+              overridden design rule constraints.
+
+              By default, the maximum transition time is 0.5 ns.
+
+       -max_fanout fanout
+              Specifies the maximum fanout  design  rule  constraint  for  the
+              cells in the specified clock trees.
+
+              By  default,  the maximum fanout constraint set on the design by
+              using the set_max_fanout command, as well as the one coming from
+              the library are ignored during clock tree synthesis.
+
+              By default, the maximum fanout is 2000.
+
+       -max_rc_delay_constraint delay
+              Specifies  the  maximum RC delay constraint from a driver pin to
+              each receiver pin while compiling  the  specified  clock  trees.
+              This  constraint  is  for  the  delay  from a driver pin to each
+              receiver pin.
+
+              By default, the maximum RC delay constraint is disabled.
+
+              This option is mutually exclusive with the  -max_rc_scale_factor
+              option.
+
+       -max_rc_scale_factor scale_factor
+              Enables  the  maximum  RC delay constraint by specifying a scale
+              factor while compiling the specified clock trees.  The  true  RC
+              delay  constraint is determined by multiplying this scale factor
+              by an internally derived RC delay. This constraint  is  for  the
+              delay from a driver pin to each receiver pin.
+
+              By default, the scale factor is not set and the maximum RC delay
+              constraint is disabled.
+
+              This option is mutually exclusive  with  the  -max_rc_delay_con-
+              straint option.
+
+       -routing_rule ndr_rule
+              Specifies  the  nondefault  routing  rule to be used for routing
+              nets in the specified clock trees.
+
+              The default is to use the default routing  rule  for  all  clock
+              nets.
+
+       -use_default_routing_for_sinks count
+              Forces the default routing rule to be used on the leaf nets that
+              drive the clock tree sinks and nets at the bottom n-1 levels  of
+              the  clock tree. A net is considered as leaf net if it drives at
+              least one flip-flop or latch clock input pin  that  is  a  sink,
+              float,  or  stop pin.  Any pins with exclude or don't touch sub-
+              tree exceptions, as well as  non-flip-flop  or  non-latch  clock
+              input  pins  with  float  or stop exceptions, are not treated as
+              sink pins of the clock tree for this purpose.   For  example,  a
+              net  that drives only one non-flip-flop float pin is not treated
+              as a leaf net for this purpose.
+
+              The default is 0.
+
+              This option is valid only if the -routing_rule option is  speci-
+              fied.
+
+       -leaf_max_transition transition_time
+              Specifies  the maximum transition time design rule constraint in
+              main library unit for the buffers and inverters used while  syn-
+              thesizing  the leaf nets during the compilation of the specified
+              clock trees. A leaf net is defined as a  net  which  drives  the
+              clock pin of at least one register, latch, or multibit register.
+
+              This value must be tighter than the  value  specified  with  the
+              -max_transition  option of the set_clock_tree_options command or
+              the set_max_transition command.
+
+              By default, the maximum transition constraint for the leaf  nets
+              is equal to the maximum transition constraint of the rest of the
+              clock tree.
+
+       -use_leaf_max_transition_on_exceptions true | false
+              Specifies if the maximum transition constraint applied  on  leaf
+              level  nets by using the -leaf_max_transition option should also
+              apply on nets connected to pins having exceptions on them.  This
+              option  is  applicable only when the -leaf_max_transition option
+              is specified.
+
+              The default is false.
+
+       -use_leaf_max_transition_on_macros true | false
+              Specifies if the maximum transition constraint applied  on  leaf
+              level  nets by using the -leaf_max_transition option should also
+              apply on nets connected to pins of macro cells. This  option  is
+              applicable  only  when the -leaf_max_transition option is speci-
+              fied.
+
+              The default is false.
+
+       -routing_rule_for_sinks ndr_rule
+              Specifies the nondefault routing rule to  be  used  for  routing
+              clock  leaf nets in the specified clock trees. This option over-
+              rides the -routing_rule option  when  routing  leaf-level  clock
+              nets, if both options are specified.
+
+       -buffer_relocation true | false
+              Enables  and  disables  buffer relocation on the specified clock
+              trees during the clock tree optimization that is performed  dur-
+              ing  initial  clock  tree synthesis.  Note that this option does
+              not  control  buffer   relocation   performed   by   the   opti-
+              mize_clock_tree command.
+
+              The default is true.
+
+       -buffer_sizing true | false
+              Enables  or  disables buffer sizing on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock  tree synthesis. Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is true.
+
+       -gate_relocation true | false
+              Enables or disables gate relocation on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock tree synthesis.  Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is true.
+
+       -gate_sizing true | false
+              Enables  or  disables  gate  sizing on the specified clock trees
+              during the clock tree optimization that is performed during ini-
+              tial  clock tree synthesis.  Note that this option does not con-
+              trol buffer relocation performed by the optimize_clock_tree com-
+              mand.
+
+              The default is false.
+
+       -logic_level_balance true | false
+              Enables  or disables building the clock tree with balanced logic
+              levels.
+
+              The default is false.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -ocv_clustering true | false
+              Enables  or disables on-chip-variation-aware register clustering
+              for capturing timing-critical endpoints, to improve  clock  path
+              sharing  between  the  relatively  more timing-critical register
+              pairs. Any previous setup that can affect  the  timing  measured
+              between  register  pairs,  such  as  the  set_clock_latency  and
+              set_clock_uncertainty command, might affect the clustering  cri-
+              teria and accordingly affect the resulting clock trees.
+
+              The default is false.
+
+       -ocv_path_sharing true | false
+              Enables  or disables on-chip-variation-aware clock path sharing.
+              When enabled, the tool attempts to  generate  clock  trees  with
+              more shared paths among clock paths driving different clock end-
+              points. The increase of path-sharing can help to decrease  clock
+              skew  caused  by  on-chip-variation.  Clock  insertion delay can
+              increase when this option is enabled.
+
+              The default is true.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -advanced_drc_fixing true | false
+              Enables  or  disables  the  advanced DRC fixing feature in clock
+              tree synthesis and optimization.
+
+              The default is false.
+
+              This is a global option; it affects all clock  trees  regardless
+              of the -clock_trees option.
+
+       -config_file_read file_name
+              Directs  clock tree synthesis to build the clock trees according
+              to the configuration  defined  in  the  specified  configuration
+              file.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -config_file_write file_name
+              Directs clock tree synthesis to write out  the  specified  clock
+              tree configuration file after performing clock tree synthesis.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -insert_boundary_cell true | false
+              Enables or disables the insertion of boundary cells  near  clock
+              input ports for block-level designs.
+
+              The default is false.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+       -operating_condition  min | min_max | max
+              Sets the operating condition at which clock tree synthesis  syn-
+              thesizes the clock trees.
+
+              By default, the operating condition is set to max.
+
+              This  is  a global option; it affects all clock trees regardless
+              of the -clock_trees option.
+
+DESCRIPTION
+       The general flow for synthesizing a clock tree is as follows:
+
+      1. Trace the initial clock tree structure (based on the initial  netlist
+         and  SDC commands). Based on the results, proceed to step 2 below, if
+         needed.
+
+      2. Define the clock tree exceptions (the set_clock_tree_exceptions  com-
+         mand).
+
+      3.  Specify  the buffers and inverters to use in the synthesis and opti-
+         mization of the clock tree (the set_clock_tree_references command).
+
+      4. Synthesize the clock tree and update  the  design  netlist  with  the
+         legal placement results (the compile_clock_tree command).
+
+       A  clock  tree  structure is defined from the pin of an instance called
+       the source pin. It is assumed that the clock tree is to be  constructed
+       from this source pin until leaf pins of sequential elements are encoun-
+       tered. Exceptions are used to modify this assumption. After clock  tree
+       exceptions  have  been added or modified, the clock tree can be synthe-
+       sized.
+
+       At minimum, specify the source pin of the clock tree to create an  ini-
+       tial clock tree structure. (If source pin is not specified, the command
+       defines the settings for all clock trees in the design.) After the def-
+       inition  of  the clock tree has been created, other clock tree commands
+       use the same source pin to do one or more of the following to the clock
+       tree:
+
+       o Add constraints to it
+       o Add exceptions to it
+       o Report on it
+       o Synthesize it
+
+       The  -clock_trees  option defines the pin that is the root, or starting
+       point, of the clock tree. It must be a pin of a leaf cell, a hierarchi-
+       cal port, or an input port of the top-level design.
+
+       The set_clock_tree_references command specifies the library buffers and
+       inverters to use for clock tree synthesis.
+
+   Tracing Rules
+       The following section assumes familiarity with the concepts  of  timing
+       arcs,  timing  arc  unateness, combinational arcs, and sequential arcs.
+       The following set of rules is applied to  determine  which  clock  tree
+       nets  in  the  transitive  fanout  of the driving pin are buffered, and
+       which load pins of those nets are considered as balance  points  during
+       clock tree synthesis. The general rule is to gather a set of clock tree
+       nets by iteratively tracing through cells in the clock network.   Trac-
+       ing  starts at the net driven by the root pin and continues through the
+       owning cells of its load pins when they meet the following conditions:
+
+       o The output pin has at least one fanout.
+       o The output pin is not on a pad net, which is a net between an I/O pad
+         cell and a top-level port, such as a bonding net.
+       o  There is at least one combinational timing arc between the input pin
+         on the clock path and the output pin or there is a sequential  clock-
+         to-output  data  arc and the related output is the source of a gener-
+         ated clock.
+       o There is no three-state enable or  disable  timing  arc  between  the
+         input pin on the clock path and the output pin.
+
+       If  more  than  one output on a cell meets these conditions, clock tree
+       synthesis selects a random pin and generates a warning message indicat-
+       ing which pin was chosen. Use the set_disable_timing command to disable
+       as many unwanted timing arcs in the cell as needed to force a  specific
+       output  pin  to  be  selected.  When both sequential arcs (to generated
+       clock source pins) and combinational arcs  can  be  traced,  additional
+       warning messages are issued.
+
+       When  clock  tree synthesis traces through a cell to an output pin, the
+       driven net becomes a clock tree  net  and  the  rules  are  iteratively
+       applied  to  all  its  load pins to determine the other clock tree nets
+       among the transitive fanout of this net.
+
+       Clock tree synthesis does not trace through a clock positive-edge  arc,
+       a  clock negative-edge arc, or a three-state enable arc. All other com-
+       binational cell timing arcs are traced through.  This  includes  timing
+       arcs of multiplexer cells or combinational arcs from data pins of latch
+       cells (transparent mode). Sequential clock-gating cells are also traced
+       through if there is a combinational arc connected to the clock path. By
+       default, all nonclock pins of sequential elements,  except  three-state
+       enable  or  disable  pins,  become  exclude  pins  unless  they have an
+       explicit stop pin exception. For example, the following types  of  pins
+       are implicitly excluded:
+
+       o Pins of combinational cells without fanout
+       o Pins of combinational cells with disabled timing arcs
+       o Top-level output ports
+       o Input pins of pad cells
+       o Data pins of flip-flops or memories
+
+       The -exceptions option of the report_clock_tree command reports implic-
+       itly excluded pins as inferred.
+
+       Applying the set_clock_tree_exceptions command with appropriate options
+       to  some  pins in the transitive fanout of the clock root modifies this
+       default behavior.
+
+   Multicorner-Multimode Support
+       This command has no dependency on scenario-specific information.
+
+EXAMPLES
+       The following example sets a target skew  of  0.050  ns  only  for  the
+       my_clock clock tree:
+
+         prompt> set_clock_tree_options \
+                 -clock_trees my_clock -target_skew 0.050
+
+       The following example adds an exception to exclude a fanout pin Reg0/CP
+       from examination for skew optimization and analysis. This creates a new
+       clock tree structure that takes into account this new exception:
+
+         prompt> set_clock_tree_exceptions -exclude_pins [get_pins Reg0/CP]
+
+       The  following  example  adds  an  exception to define pin Ram0/we as a
+       float pin:
+
+         prompt> set_clock_tree_exceptions -float_pins [get_pins RAM0/we]
+
+       The following example reports the current definition of the CLK1  clock
+       tree:
+
+         prompt> report_clock_tree -clock_trees CLK1
+
+SEE ALSO
+       compile_clock_tree(2)
+       report_clock_tree(2)
+       set_clock_tree_optimization_options(2)
+       set_clock_tree_exceptions(2)
+       set_clock_tree_references(2)
+       set_disable_timing(2)
+
+                            Version K-2015.06
+            Copyright (c) 2015 Synopsys, Inc. All rights reserved.
+icc_shell> history
+     1  read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+     2  read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+     3  read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+     4  import_designs  /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc -format ddc
+     5  man set_clock_tree_options
+     6  set_clock_uncertainty  [get_clocks edge_clk*]
+     7  set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+     8  set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+     9  get_cells
+    10  man set_clock_tree_options
+    11  history
+icc_shell> 

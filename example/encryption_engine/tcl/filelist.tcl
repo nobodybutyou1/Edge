@@ -25,11 +25,20 @@
 
 
 
+set DESIGN_SRC {CONTROL.v WKG.v present_encryptor_top.v sbox6.v \
+CRYPTO_PATH.v crp.v sbox.v sbox7.v \
+HIGHT_CORE_TOP.v des3.v sbox1.v sbox8.v \
+KEY_SCHED.v encryption_engine.v sbox2.v sub_per.v \
+RF.v key_sel3.v sbox3.v substitution.v \
+SKG.v key_update.v sbox4.v \
+WF.v permutation.v sbox5.v}
 
-set WORK_FOLDER "work"
-
-set search_path [concat $search_path $env(EDGE_ROOT)/common $env(EDGE_ROOT)/scripts/add_controller $env(EDGE_ROOT)/scripts/ff2latch $env(EDGE_ROOT)/scripts/retiming $env(EDGE_ROOT)/scripts/sync_syn $env(EDGE_ROOT)/scripts/environment $env(EDGE_ROOT)/scripts/fixdelay $env(EDGE_ROOT)/scripts/cdc $env(EDGE_ROOT)/scripts/icc]
-
-source $env(EDGE_DESIGN_TCL)
-source $env(EDGE_TECH_TCL)
-source filename.tcl
+foreach file $DESIGN_SRC {
+	switch [file extension $file] {
+		.vhd { set format "vhdl" }
+		.vhdl { set format "vhdl" }
+		.v { set format "verilog" }
+		.sv { set format "sverilog" }
+	}
+	analyze -format $format $file
+}

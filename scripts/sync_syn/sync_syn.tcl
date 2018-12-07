@@ -75,6 +75,22 @@ set OUT_MAX $CLK_PERIOD
 #set_input_delay [expr 0.1*$CLK_PERIOD] -clock [get_clocks edge_clk_s] [remove_from_collection [all_inputs] [get_ports "edge_clk_s"]]
 #set_output_delay [expr 0.1*$CLK_PERIOD] -clock [get_clocks edge_clk_s] [all_outputs]
 set_load 0.02672 [all_outputs]
+set_dont_use [get_lib_cells  "*/*X2*" -filter "@name =~ *X2?_*"]
+set_dont_use [get_lib_cells  "*/*X3*" -filter "@name =~ *X3?_*"]
+
+#IO constraints
+create_clock -name "Virtual_edge_clk_s" -period $CLK_PERIOD -waveform [list 0 $HALF_PERIOD]
+
+
+create_clock -name "Virtual_edge_clk_m" -period $CLK_PERIOD -waveform [list 0 $HALF_PERIOD]
+
+ set_input_delay [expr 0.1*$CLK_PERIOD] -clock "Virtual_edge_clk_s" -clock_fall [remove_from_collection [all_inputs] [get_ports "edge_clk_*"]]
+ set_input_transition [expr 0.1*$CLK_PERIOD] [remove_from_collection [all_inputs] [get_ports "edge_clk_*"]]
+
+ set_load 0.02672 [all_outputs] 
+
+ set_output_delay [expr 0.1*$CLK_PERIOD] -clock "Virtual_edge_clk_m" [all_outputs]
+###########
 
 set target_library "$target_library EDGE.db"
 set link_library [concat * $target_library]

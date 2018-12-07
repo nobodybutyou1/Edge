@@ -1,0 +1,17 @@
+#@ # 
+#@ # Running icc_shell Version K-2015.06 for linux64 -- May 22, 2015
+#@ # Date:   Wed Oct 17 17:58:21 2018
+#@ # Run by: pujari@sierra.usc.edu
+#@ 
+
+read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+read_ddc /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc
+import_designs  /home/pujari/Edge1.0.5_clean_wPlasma/work_v1.05/bd_conv/mlite_cpu.ddc -format ddc
+man set_clock_tree_options
+set_clock_uncertainty  [get_clocks edge_clk*]
+set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+set_clock_uncertainty  [expr $CLK_PERIOD * 0.9] [get_clocks edge_clk*]
+get_cells
+man set_clock_tree_options
+history

@@ -168,6 +168,7 @@ report_timing -delay_type min -from $edge_clk_m_latch_out -to $edge_clk_s_latch_
 report_timing -delay_type min -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in > all_inputs_to_clk_m_latch_in.timing
 report_timing -delay_type min -from $edge_clk_s_latch_out -to [all_outputs] > clk_s_latch_out_to_all_outputs.timing
 
+source cdc.tcl
 return
 if { !$env(DEBUG) } {
         exit
