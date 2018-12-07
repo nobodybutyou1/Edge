@@ -16,11 +16,7 @@ module encryption_engine ( input [63:0] input_final,
 						   input i_post_rdy,
 						   output ready_done,
 						   output [63:0] output_final,					   
-						   output  ready_o);	
-
-// Interface with S2A: 64+168+6+2+5=245
-// Interface with A2S: 1+64+1 = 66
-						   
+						   output  ready_o);				   
 
 //Keys for 3 cores
 reg [167:0] key_reg;
@@ -85,9 +81,9 @@ end
 
 //Three cores
 
-des3 des_o(output_i, input_i, key1, key2, key3, decrypt_i, roundSel, clk);
-present_encryptor_top present_o(output_j, {input_j, key5}, data_load, key_load, clk);
-HIGHT_CORE_TOP hight_o(~reset, clk, key_load, key4, i_post_rdy, i_op, data_load, input_k, ready_done, output_k, ready_o);
+des3 des_o(output_i, input_i, key1, key2, key3, decrypt_i, roundSel_reg, clk);
+present_encryptor_top present_o(output_j, {input_j, key5}, data_load_reg, key_load_reg, clk);
+HIGHT_CORE_TOP hight_o(~reset, clk, key_load_reg, key4, i_post_rdy_reg, i_op_reg, data_load_reg, input_k, ready_done, output_k, ready_o);
 endmodule
 
 
