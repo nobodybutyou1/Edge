@@ -24,3 +24,4 @@ ARGUMENTS
 		It's optional. It is used to debug. If you specify this, the flow will not exit dc_shell automatically. 
 
 Note: This version includes controller constraints. Reset bug during retiming is fixed. PnR in this version works.
+Note: Programmable delay line is also supported. Please see two sample delaylines under example->plasma->tcl folder
