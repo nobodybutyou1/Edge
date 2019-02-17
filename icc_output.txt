@@ -1,0 +1,181 @@
+icc_shell> man create_floorplan
+2.  Synopsys Commands                                        Command Reference
+                               create_floorplan
+
+NAME
+       create_floorplan
+              Creates  a  floorplan with a chip boundary, core, rows, and wire
+              tracks.
+
+SYNTAX
+       status create_floorplan
+               [-control_type aspect_ratio | width_and_height | boundary]
+               [-core_aspect_ratio ratio]
+               [-core_utilization ratio]
+               [-core_width width]
+               [-core_height height]
+               [-use_vertical_row]
+               [-no_double_back]
+               [-start_first_row]
+               [-flip_first_row]
+               [-left_io2core distance]
+               [-right_io2core distance]
+               [-bottom_io2core distance]
+               [-top_io2core distance]
+               [-keep_macro_place]
+               [-keep_std_cell_place]
+               [-min_pad_height]
+               [-pad_limit]
+               [-keep_io_place]
+
+   Data Types
+       ratio        float
+       width        float
+       height       float
+       distance     float
+
+ARGUMENTS
+       -control_type aspect_ratio | width_and_height | boundary
+              Specifies how the command sizes the core area of the  floorplan.
+              The  aspect_ratio  control  type specifies the area based on the
+              ratio of  the  core  height  divided  by  the  core  width.  The
+              width_and_height  control  type  specifies the area based on the
+              true dimensions of the core. The boundary control type specifies
+              the  area  based  on the place and route boundary of the current
+              design. The default control type is aspect_ratio.
+
+       -core_aspect_ratio ratio
+              Specifies the aspect ratio for the floorplan. The  aspect  ratio
+              is the height divided by the width. For example, an aspect ratio
+              of 1.00 specifies a  square  core  area  with  equal  width  and
+              height. An aspect ratio of 3.00 specifies a height that is three
+              times the width. An aspect ratio of 0.50 specifies a width  that
+              is two times the height. Note that the specified aspect ratio is
+              only a target. The tool creates the floorplan  with  the  actual
+              core area perimeter as close as possible to the specified aspect
+              ratio.
+
+       -core_utilization ratio
+              Specifies the utilization for the core area. The utilization  is
+              the  total  area  of the core occupied by all standard cells and
+              macro cells divided by the total core area. You  can  specify  a
+              utilization  value  between  0 and 1. The cell area includes all
+              standard and macro cells. For example, a core utilization of 0.8
+              specifies  that  80  percent  of  the core area is used for cell
+              placement and 20 percent is available for routing.  This  option
+              is only valid when you specify the -control_type option.
+
+       -core_width width
+              Specifies  the  width  of the core area. The unit is in microns.
+              This option is only valid when  you  specify  the  -control_type
+              width_and_height option.
+
+       -core_height height
+              Specifies  the  height of the core area. The unit is in microns.
+              This option is only valid when  you  specify  the  -control_type
+              width_and_height option.
+
+       -use_vertical_row
+              Specifies  that  the  command places cell rows vertically in the
+              core area. If you do not specify this option, the command places
+              cell rows horizontally in the core area.
+
+       -no_double_back
+              Specifies  that  the  command  places pairs of cell rows without
+              flipping one row in each pair. By default, the command flips one
+              cell row in each cell row pair.
+
+       -start_first_row
+              Specifies that cell row pairing begins at the bottom of the core
+              area for horizontally placed cell rows or the left side  of  the
+              core  area for vertically placed cell rows. This option is mutu-
+              ally exclusive with the -no_double_back option. If  this  option
+              is  not  used,  cell row pairing might or might not begin at the
+              very first row. The cell row pairing does not begin at the  very
+              first  row  when  the  wire  track  creation forces to have gaps
+              between row pairs.
+
+       -flip_first_row
+              Specifies that the command flips the first row at the bottom  of
+              the core area for horizontally placed cell rows, or the leftmost
+              row for vertically placed cell rows.  This  option  is  mutually
+              exclusive with the -no_double_back option.
+
+       -left_io2core distance
+              Specifies  the  distance  between the left side of the core area
+              and the right side of the closest terminal or pad. The  unit  is
+              in microns.
+
+       -right_io2core distance
+              Specifies  the  distance between the right side of the core area
+              and the left side of the closest terminal or pad. The unit is in
+              microns.
+
+       -bottom_io2core distance
+              Specifies  the distance between the bottom side of the core area
+              and the top side of the closest terminal or pad. The unit is  in
+              microns.
+
+       -top_io2core distance
+              Specifies the distance between the top side of the core area and
+              the bottom side of the closest terminal or pad. The unit  is  in
+              microns.
+
+       -keep_macro_place
+              Specifies  that  the  command keeps the placement of macro cells
+              and does not move them.
+
+       -keep_std_cell_place
+              Specifies that the command keeps the placement of standard cells
+              and does not move them.
+
+       -min_pad_height
+              Specifies  that the die area is based on the minimum pad height.
+              Generally speaking, die area becomes smaller because bigger pads
+              will overlap the core.
+
+       -pad_limit
+              Specifies  that  the  command  places pads with no space between
+              pads.
+
+       -keep_io_place
+              Specifies that the command keeps the location of  terminals  and
+              pads,  even if you previously specified I/O constraints by using
+              theread_io_constraints command.
+
+DESCRIPTION
+       The create_floorplan command  performs  floorplanning  on  the  current
+       design. Before running this command, you must open a physical design by
+       using the open_mw_cel command.
+
+   Multicorner-Multimode Support
+       This command has no dependency on scenario-specific information.
+
+EXAMPLES
+       The following example creates a floorplan using the default settings:
+
+         prompt> open_mw_cel top -lib design
+         {top}
+         prompt> create_floorplan -control_type aspect_ratio \
+           -core_utilization 0.7
+         1
+
+SEE ALSO
+       set_pad_physical_constraints(2)
+
+                            Version K-2015.06
+            Copyright (c) 2015 Synopsys, Inc. All rights reserved.
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> 
+icc_shell> exit
+
+Thank you...
+

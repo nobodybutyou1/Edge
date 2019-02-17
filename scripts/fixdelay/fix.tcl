@@ -30,14 +30,21 @@
 set edge_clk_m_pin [get_object_name [get_pins -of_objects edge_clk_m -filter "direction==2"]]
 set edge_clk_s_pin [get_object_name [get_pins -of_objects edge_clk_s -filter "direction==2"]]
 
+set temp1 [add_to_collection [get_cells * -filter "@ref_name=~*EDGE_SCELL*"] [get_cells * -filter "name=~*edgeM*"]]
+set edge_clk_m_latch [add_to_collection $temp1 [get_cells -of_objects edge_clk_m -filter "name=~R*"]]
 
-set edge_clk_m_latch [add_to_collection [get_cells -of_objects edge_clk_m -filter "name=~*edgeM*"] [get_cells -of_objects edge_clk_m -filter "name=~R*"]]
-set edge_clk_m_latch_in [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "direction==1"]]
-set edge_clk_m_latch_out [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "direction==2"]]
+set temp1 [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*CP"]]
+set edge_clk_m_latch_in [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*D"]]
+set edge_clk_m_latch_in [concat $temp1 $edge_clk_m_latch_in]
+set edge_clk_m_latch_out [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*Q*"]]
 
-set edge_clk_s_latch [add_to_collection [get_cells -of_objects edge_clk_s -filter "name=~*edgeS*"] [get_cells -of_objects edge_clk_s -filter "name=~R*"]]
-set edge_clk_s_latch_in [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "direction==1"]]
-set edge_clk_s_latch_out [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "direction==2"]]
+set temp2 [add_to_collection [get_cells * -filter "@ref_name=~*DLATCH*"] [get_cells * -filter "name=~*edgeS*"]]
+set edge_clk_s_latch [add_to_collection $temp2 [get_cells -of_objects edge_clk_s -filter "name=~R*"]]
+set temp2 [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*en"]]
+set edge_clk_s_latch_in [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*in"]]
+set edge_clk_s_latch_in [concat $temp2 $edge_clk_s_latch_in]
+set edge_clk_s_latch_out [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*out"]]
+
 
 source functions.tcl
 source ACSetup.tcl
@@ -59,3 +66,6 @@ write_sdf $FIXDELAY_SDF_T
 rename_design ${DESIGN_NAME}_dc ${DESIGN_NAME}
 set sh_command_log_file "${FIXDELAY_LOG}/command.log"
 file copy -force filenames.log ${FIXDELAY_LOG}/filenames.log
+
+
+

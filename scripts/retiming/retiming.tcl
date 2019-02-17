@@ -31,6 +31,7 @@ if {[list_design] == 0} {
 	source $env(EDGE_ROOT)/scripts/environment/common_setting.tcl
 	define_design_lib WORK -path $WORK_FOLDER
 	read_file -format verilog $FF2LATCH_NETLIST
+	current_design $DESIGN_NAME
 	read_sdc $FF2LATCH_SDC
 	set_dont_touch_network edge_clk_m
 	set_dont_touch_network edge_clk_s
@@ -61,19 +62,20 @@ set_max_time_borrow 0 [get_clocks {edge_clk_m edge_clk_s}]
 
 #dump_slack "$DESIGN_NAME/retiming/slack_before.txt"
 
-set_dont_retime [all_fanout -from edge_clk_m -endpoints_only -only_cells ] true
+set_dont_retime [all_fanout -from edge_clk_m -only_cells ] true
 #set_dont_retime [all_fanout -from edge_clk_s -endpoints_only -only_cells ] true
 #optimize_registers -latch -print_critical_loop -minimum_period_only -delay_threshold $HALF_PERIOD
 
-#ungroup -all -flatten
+#keep the scan cell in heiararchy
+
+ungroup -all
 
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: set_dont_retime done $clockstring"
 
-
 # dont touch reset path from reset to master latches
 set reset_to_cells [all_fanout -from edge_reset -only_cells]
-set master_from_cells [all_fanin -to [get_pins -of_objects *edgeM*] -only_cells -levels 1]
+set master_from_cells [all_fanin -to [concat [get_pins -of_objects *edgeM*] [get_pins -of_objects [get_cells -of_objects edge_clk_m]]] -only_cells -levels 1]
 set reset_master_cells [remove_from_collection -intersect $reset_to_cells $master_from_cells]
 set_dont_touch $reset_master_cells true
 
@@ -100,7 +102,7 @@ file copy -force filenames.log ${RETIMING_LOG}/filenames.log
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: compile_ultra, write_file done $clockstring"
 
-if { !$env(DEBUG) } {
-        exit
-}
+#if { !$env(DEBUG) } {
+#        exit
+#}
 

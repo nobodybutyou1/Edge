@@ -30,14 +30,19 @@ if {[list_design] == 0} {
 	source $env(EDGE_ROOT)/scripts/environment/common_setting.tcl
 	define_design_lib WORK -path $WORK_FOLDER
 	set target_library "$target_library EDGE.db"
+	set target_library "$target_library EDGE_SCELL.db"
 	set link_library [concat * $target_library]
 	read_file -format verilog $SYNC_SYN_NETLIST
 	read_sdc $SYNC_SYN_SDC
-	set_dont_touch_network edge_clk_s
+	set_dont_touch_network edge_clk_m
 	link
 }
 
 current_design $DESIGN_NAME
+
+# exclude scan cell
+set target_library [lsearch -all -inline -not -exact $target_library EDGE_SCELL.db]
+set link_library [concat * $target_library]
 
 set target_library [lsearch -all -inline -not -exact $target_library EDGE.db]
 set link_library [concat * $target_library]
@@ -46,31 +51,58 @@ analyze -format verilog EDGE.v
 elaborate EDGE_LATCH
 compile_ultra -no_autoungroup
 elaborate EDGE_DFF_R
+
+analyze -format verilog EDGE_SCELL_REPLACE.v
+elaborate DLATCH
+compile_ultra -no_autoungroup
+elaborate EDGE_SCELL_R_sub
+compile_ultra -no_autoungroup
+elaborate EDGE_SCELL_S_sub
+compile_ultra -no_autoungroup
+elaborate EDGE_SCELL_R
+elaborate EDGE_SCELL_S
+
 current_design ${DESIGN_NAME}
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: analyze,link,elab done $clockstring"
 
-create_port -direction "in" {edge_clk_m}
-create_net {edge_clk_m}
-set reg_cells [get_cells "*" -filter "@ref_name == EDGE_DFF_R"]
-set edge_clk_m_pins [get_pins -of_objects $reg_cells -filter "name =~ *CKbar"]
-connect_net edge_clk_m [get_ports edge_clk_m]
-connect_net edge_clk_m $edge_clk_m_pins
+create_port -direction "in" {edge_clk_s}
+create_net {edge_clk_s}
+connect_net edge_clk_s [get_ports edge_clk_s]
+
+set reg_cells [get_cells "*" -filter "@ref_name == EDGE_DFF_R"] 
+if {[llength $reg_cells] > 0} {
+    set edge_clk_s_pins [get_pins -of_objects $reg_cells -filter "name =~ *CKbar"]
+	connect_net edge_clk_s $edge_clk_s_pins
+}
+
+set scanR_cells [get_cells "*" -filter "@ref_name == EDGE_SCELL_R"]
+if {[llength $scanR_cells] > 0} {
+	set edge_R_pins [get_pins -of_objects $scanR_cells -filter "name =~ *en"]
+	connect_net edge_clk_s $edge_R_pins
+}
+
+set scanS_cells [get_cells "*" -filter "@ref_name == EDGE_SCELL_S"]
+if {[llength $scanS_cells] > 0} {
+	set edge_S_pins [get_pins -of_objects $scanS_cells -filter "name =~ *en"]
+	connect_net edge_clk_s $edge_S_pins
+}
+
+
 
 set HALF_PERIOD [expr $CLK_PERIOD/2]
-create_clock -name "edge_clk_m" -period $CLK_PERIOD -waveform [list $HALF_PERIOD $CLK_PERIOD] [get_ports edge_clk_m]
-set_dont_touch_network edge_clk_m
-set_ideal_network edge_clk_m 
+create_clock -name "edge_clk_s" -period $CLK_PERIOD -waveform [list $HALF_PERIOD $CLK_PERIOD] [get_ports edge_clk_s]
+set_dont_touch_network edge_clk_s
+set_ideal_network edge_clk_s 
 
-#set_max_time_borrow 0 [get_clocks {edge_clk_m edge_clk_s}]
 
-remove_input_delay [remove_from_collection [all_inputs] [get_ports "edge_clk_s"]]
-#set_input_delay [expr 0.1*$CLK_PERIOD] -clock [get_clocks edge_clk_m] -level_sensitive [remove_from_collection [all_inputs] [get_ports "edge_clk_m edge_clk_s"]]
+remove_input_delay [remove_from_collection [all_inputs] [get_ports "edge_clk_m"]]
+
 remove_output_delay [all_outputs]
-#set_output_delay [expr 0.1*$CLK_PERIOD] -clock [get_clocks edge_clk_s] -level_sensitive [all_outputs]
+
 
 compile_ultra -no_autoungroup 
-ungroup -all -flatten
+#ungroup -all -flatten
 redirect $FF2LATCH_LOG/change_names { change_names -rules verilog -hierarchy -verbose }
 write_file -hierarchy -format verilog -out $FF2LATCH_NETLIST
 write_sdc $FF2LATCH_SDC

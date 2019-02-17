@@ -56,8 +56,10 @@ module top;
    edge_if ivif(.rst_edge(rst_edge), .rst_edge_ctrl(rst_edge_ctrl), .Rreq(1'b0), .clk(clk));
    edge_if ovif1(.rst_edge(rst_edge), .rst_edge_ctrl(rst_edge_ctrl), .Rreq(1'b0), .clk(clk));
    edge_if ovif2(.rst_edge(rst_edge), .rst_edge_ctrl(rst_edge_ctrl), .Rreq(1'b0), .clk(clk));
-   mlite_cpu_dc uut(.intr_in(ivif.intr_in), .address_next(ovif1.address_next[31:2]), .byte_we_next(ovif1.byte_we_next), .address(ovif1.address[31:2]), .byte_we(ovif1.byte_we), .data_w(ovif1.data_w), .data_r(ivif.data_r), .mem_pause(ivif.mem_pause), .edge_reset(rst_edge), .Lreq(Lreq), .Rack(Rack), .edge_ctrl_reset(rst_edge_ctrl), .Rreq(Rreq), .Lack(Lack) );
-   mlite_cpu_syn uut_ref(.intr_in(ivif.intr_in), .address_next(ovif2.address_next[31:2]), .byte_we_next(ovif2.byte_we_next), .address(ovif2.address[31:2]), .byte_we(ovif2.byte_we), .data_w(ovif2.data_w), .data_r(ivif.data_r), .mem_pause(ivif.mem_pause), .edge_reset(rst_edge), .edge_clk_s(clk) );
+   
+   // new port: I_SCAN_IN, I_TEST_MODE, I_SCAN_RST, I_SCAN_SE, O_SCAN_OUT
+   mlite_cpu_dc uut(.intr_in(ivif.intr_in), .address_next(ovif1.address_next[31:2]), .byte_we_next(ovif1.byte_we_next), .address(ovif1.address[31:2]), .byte_we(ovif1.byte_we), .data_w(ovif1.data_w), .data_r(ivif.data_r), .mem_pause(ivif.mem_pause), .edge_reset(rst_edge), .Lreq(Lreq), .Rack(Rack), .edge_ctrl_reset(rst_edge_ctrl), .Rreq(Rreq), .Lack(Lack), .I_SCAN_IN(1'b0), .I_TEST_MODE(1'b0), .I_SCAN_RST(1'b0), .I_SCAN_SE(1'b0) );
+   mlite_cpu_syn uut_ref(.intr_in(ivif.intr_in), .address_next(ovif2.address_next[31:2]), .byte_we_next(ovif2.byte_we_next), .address(ovif2.address[31:2]), .byte_we(ovif2.byte_we), .data_w(ovif2.data_w), .data_r(ivif.data_r), .mem_pause(ivif.mem_pause), .edge_reset(rst_edge), .edge_clk_m(clk), .I_SCAN_IN(1'b0), .I_TEST_MODE(1'b0), .I_SCAN_RST(1'b0), .I_SCAN_SE(1'b0));
    initial begin
       $sdf_annotate("./test/mlite_cpu_dc.sdf",uut,,,"TYPICAL","1.0:1.0:1.0", "FROM_MTM");
       Lreq = 1'b0;

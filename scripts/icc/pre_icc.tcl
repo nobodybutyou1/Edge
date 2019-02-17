@@ -53,6 +53,8 @@ set_tlu_plus_files -max_tluplus $tlup_max -min_tluplus $tlup_min -tech2itf_map $
 # Open/Import design
 import_designs $POST_DC_DDC -format ddc -top $DESIGN_NAME
 read_sdc $POST_DC_SDC
+# Import Scandef file
+read_def ${SYNC_BD_SCAN_DEF}
 
 
 # Save new cel and open it
@@ -80,16 +82,24 @@ echo "#############################################\n"
 remove_clock edge_clk_s
 remove_clock edge_clk_m
 
+
 set edge_clk_m_pin [get_object_name [get_pins -of_objects edge_clk_m -filter "direction==out"]]
 set edge_clk_s_pin [get_object_name [get_pins -of_objects edge_clk_s -filter "direction==out"]]
 
-set edge_clk_m_latch [add_to_collection [get_cells -of_objects edge_clk_m -filter "name=~*edgeM*"] [get_cells -of_objects edge_clk_m -filter "name=~R*"]]
-set edge_clk_m_latch_in [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "direction==in"]]
-set edge_clk_m_latch_out [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "direction==out"]]
+set temp1 [add_to_collection [get_cells * -filter "@ref_name=~*EDGE_SCELL*"] [get_cells * -filter "name=~*edgeM*"]]
+set edge_clk_m_latch [add_to_collection $temp1 [get_cells -of_objects edge_clk_m -filter "name=~R*"]]
 
-set edge_clk_s_latch [add_to_collection [get_cells -of_objects edge_clk_s -filter "name=~*edgeS*"] [get_cells -of_objects edge_clk_s -filter "name=~R*"]]
-set edge_clk_s_latch_in [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "direction==in"]]
-set edge_clk_s_latch_out [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "direction==out"]]
+set temp1 [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*CP"]]
+set edge_clk_m_latch_in [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*D"]]
+set edge_clk_m_latch_in [concat $temp1 $edge_clk_m_latch_in]
+set edge_clk_m_latch_out [get_object_name [get_pins -of_objects $edge_clk_m_latch -filter "name=~*Q*"]]
+
+set temp2 [add_to_collection [get_cells * -filter "@ref_name=~*DLATCH*"] [get_cells * -filter "name=~*edgeS*"]]
+set edge_clk_s_latch [add_to_collection $temp2 [get_cells -of_objects edge_clk_s -filter "name=~R*"]]
+set temp2 [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*en"]]
+set edge_clk_s_latch_in [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*in"]]
+set edge_clk_s_latch_in [concat $temp2 $edge_clk_s_latch_in]
+set edge_clk_s_latch_out [get_object_name [get_pins -of_objects $edge_clk_s_latch -filter "name=~*out"]]
 
 remove_ideal_network [get_pins -of_objects edge_clk_m -filter "direction==out"]
 remove_ideal_network [get_pins -of_objects edge_clk_s -filter "direction==out"]

@@ -26,15 +26,6 @@
 #compile_clock_tree -high_fanout_net edge_clk_m
 
 #set_clock_tree_references -references $buffer_cell
-clock_opt -inter_clock_balance  -concurrent_clock_and_data
-set M3Width [expr 2 *[get_attribute  [get_layers M3] defaultWidth]]
-set M4Width [expr 2 *[get_attribute  [get_layers M4] defaultWidth]]
-set pitch [get_attribute  [get_layers M4] pitch]
-define_routing_rule M3_M4NDR -widths "M4 $M3Width  M5 $M4Width" -spacings  " M4 $pitch M5 $pitch"
-
-set_clock_tree_references -references $ctree  
-set_clock_tree_options -max_fanout 25 -max_transition [expr 0.1 * $CLK_PERIOD] -ocv_clustering true -target_skew 0.1 -routing_rule M3_M4NDR -target_early_delay [expr 0.35 * $CLK_PERIOD] -routing_rule M3_M4NDR 
-
-compile_clock_tree -high_fanout_net [get_net edge*/edge_clk_*]
-
-#compile_clock_tree -high_fanout_net "edge_clk_m edge_clk_s"
+clock_opt -inter_clock_balance
+set_clock_tree_options -target_skew 0.1
+compile_clock_tree -high_fanout_net "edge_clk_m edge_clk_s I_SCAN_SE"

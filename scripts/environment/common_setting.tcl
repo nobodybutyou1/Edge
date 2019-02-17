@@ -28,7 +28,7 @@
 
 set WORK_FOLDER "work"
 
-set search_path [concat $search_path $env(EDGE_ROOT)/common $env(EDGE_ROOT)/scripts/add_controller $env(EDGE_ROOT)/scripts/ff2latch $env(EDGE_ROOT)/scripts/retiming $env(EDGE_ROOT)/scripts/sync_syn $env(EDGE_ROOT)/scripts/environment $env(EDGE_ROOT)/scripts/fixdelay $env(EDGE_ROOT)/scripts/cdc $env(EDGE_ROOT)/scripts/icc]
+set search_path [concat $search_path $env(EDGE_ROOT)/common $env(EDGE_ROOT)/scripts/add_controller $env(EDGE_ROOT)/scripts/ff2latch $env(EDGE_ROOT)/scripts/retiming $env(EDGE_ROOT)/scripts/sync_syn $env(EDGE_ROOT)/scripts/environment $env(EDGE_ROOT)/scripts/fixdelay $env(EDGE_ROOT)/scripts/icc]
 
 source $env(EDGE_DESIGN_TCL)
 source $env(EDGE_TECH_TCL)

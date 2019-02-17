@@ -25,8 +25,8 @@
 
 
 
-set DESIGN_SRC {mlite_pack.vhd mlite_cpu.vhd alu.vhd bus_mux.vhd control.vhd mem_ctrl.vhd mult.vhd pc_next.vhd pipeline.vhd reg_bank.vhd shifter.vhd}
-
+#set DESIGN_SRC {mlite_pack.vhd mlite_cpu.vhd alu.vhd bus_mux.vhd control.vhd mem_ctrl.vhd mult.vhd pc_next.vhd pipeline.vhd reg_bank.vhd shifter.vhd}
+set DESIGN_SRC {mlite_cpu.v}
 foreach file $DESIGN_SRC {
 	switch [file extension $file] {
 		.vhd { set format "vhdl" }

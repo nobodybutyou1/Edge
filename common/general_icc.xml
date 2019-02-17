@@ -13,6 +13,11 @@
     
     <enforced>
       <path>
+        <startpoint>[get_pins pDLinm/in]</startpoint>
+        <endpoint>[get_pins pDLinm/out]</endpoint> 
+	<exclude>EdgeExcludeNone</exclude>
+      </path>	
+      <path>
         <startpoint>[get_pins -of_objects *DL_in_s1_mybuf1 -filter "direction==in"]</startpoint>
         <endpoint>[get_pins -of_objects *DL_in_s1_mybuf1 -filter "direction==out"]</endpoint>
 	<exclude>EdgeExcludeNone</exclude>
@@ -41,7 +46,7 @@
       <path>
         <startpoint>$edge_clk_m_latch_out</startpoint>
         <endpoint>$edge_clk_s_latch_in</endpoint>   
-	<exclude>[get_object_name [add_to_collection [get_cells CT_PATH*] [get_ports Rack]]]</exclude>
+	<exclude>[get_object_name [add_to_collection [get_cells CT_PATH*] [get_ports "Rack edge_reset edge_ctrl_reset I_SCAN*"]]]</exclude>
       </path>
       <path>
         <startpoint>$edge_clk_m_pin</startpoint>
@@ -51,6 +56,11 @@
     </base>
     
     <enforced>
+      <path>
+        <startpoint>[get_pins pDLms/in]</startpoint>
+        <endpoint>[get_pins pDLms/out]</endpoint>   
+	<exclude>EdgeExcludeNone</exclude>
+      </path>	
       <path>
         <startpoint>[get_pins -of_objects *DL_s1_s2_mybuf1 -filter "direction==in"]</startpoint>
         <endpoint>[get_pins -of_objects *DL_s1_s2_mybuf1 -filter "direction==out"]</endpoint>
@@ -80,7 +90,7 @@
       <path>
         <startpoint>$edge_clk_s_latch_out</startpoint>
         <endpoint>$edge_clk_m_latch_in</endpoint>   
-	<exclude>[get_object_name [add_to_collection [get_cells CT_PATH*] [all_inputs]]]</exclude>
+	<exclude>[get_object_name [add_to_collection [get_nets -of_objects [get_cells "CT_PATH* *reset*"]] [all_inputs]]]</exclude>
       </path>
       <path>
         <startpoint>$edge_clk_s_pin</startpoint>
@@ -90,6 +100,11 @@
     </base>
     
     <enforced>
+      <path>
+        <startpoint>[get_pins pDLsm/in]</startpoint>
+        <endpoint>[get_pins pDLsm/out]</endpoint> 
+	<exclude>EdgeExcludeNone</exclude>
+      </path>	
       <path>
         <startpoint>[get_pins -of_objects *DL_s2_s1_mybuf1 -filter "direction==in"]</startpoint>
         <endpoint>[get_pins -of_objects *DL_s2_s1_mybuf1 -filter "direction==out"]</endpoint>
@@ -129,6 +144,11 @@
     </base>
     
     <enforced>
+      <path>
+        <startpoint>[get_pins pDLsout/in]</startpoint>
+        <endpoint>[get_pins pDLsout/out]</endpoint>   
+	<exclude>EdgeExcludeNone</exclude>
+      </path>	
       <path>
         <startpoint>[get_pins -of_objects *DL_s2_out_mybuf1 -filter "direction==in"]</startpoint>
         <endpoint>[get_pins -of_objects *DL_s2_out_mybuf1 -filter "direction==out"]</endpoint>

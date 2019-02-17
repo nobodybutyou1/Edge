@@ -68,6 +68,10 @@ set tlup_typ "${tlup_base_path}/nominal/tluplus"
 set tlup_min "${tlup_base_path}/FuncRCmin/tluplus"
 set tech2itf "${tlup_base_path}/mapfile"
 
+# Set the scan cells in lib
+set scan_cell "C28SOI_SC_12_CORE_LR/C12T28SOI_LR*_SDFP*Q* C28SOI_SC_12_CLK_LR/C12T28SOI_LR_CNSDFP*QTX*"
+
+
 #####################################
 # Set Technology Constraints
 #####################################
@@ -82,10 +86,14 @@ source ${TechnoKit_path}/ICCOMPILER/techno_variables_route.tcl
 source ${TechnoKit_path}/ICCOMPILER/techno_variables_12T.tcl
 
 # IO2CORE
-set lib_io2core(top) $STM_io2core(top)
-set lib_io2core(bottom) $STM_io2core(bottom)
-set lib_io2core(left) $STM_io2core(left)
-set lib_io2core(right) $STM_io2core(right)
+#set lib_io2core(top) $STM_io2core(top)
+#set lib_io2core(bottom) $STM_io2core(bottom)
+#set lib_io2core(left) $STM_io2core(left)
+#set lib_io2core(right) $STM_io2core(right)
+set lib_io2core(top) "5"
+set lib_io2core(bottom) "5"
+set lib_io2core(left) "5"
+set lib_io2core(right) "5"
 
 # Power Rail Settings
 set lib_vdd_label $STM_techPowerPinName

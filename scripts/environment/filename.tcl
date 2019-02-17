@@ -27,10 +27,8 @@
 
 
 
-set DESIGN_ACDC_CONST "$env(EDGE_ROOT)/common/general_noloop.xml"
-set DESIGN_ACDC_CONST_ICC "$env(EDGE_ROOT)/common/general_icc_noloop.xml"
-set DESIGN_ACDC_CONST_ICC_CDC "$env(EDGE_ROOT)/common/general_icc_cdc_noloop.xml"
-
+set DESIGN_ACDC_CONST "$env(EDGE_ROOT)/common/general.xml"
+set DESIGN_ACDC_CONST_ICC "$env(EDGE_ROOT)/common/general_icc.xml"
 set TEST_OUT_FOLDER "test"
 # DC Output Files
 set SYNC_SYN_OUT_FOLDER   "sync_syn"
@@ -62,7 +60,7 @@ set POST_DC_SDF        "${POST_DC_OUT_FOLDER}/${DESIGN_NAME}.sdf"
 set POST_DC_SDC        "${POST_DC_OUT_FOLDER}/${DESIGN_NAME}.sdc"
 set POST_DC_PARASITICS "${POST_DC_OUT_FOLDER}/${DESIGN_NAME}.spef"
 set POST_DC_DDC        "${POST_DC_OUT_FOLDER}/${DESIGN_NAME}.ddc"
-set POST_DC_LOG "${POST_DC_OUT_FOLDER}/logs"
+set POST_DC_LOG        "${POST_DC_OUT_FOLDER}/logs"
 
 set FIXDELAY_OUT_FOLDER   "fixdelay"
 set FIXDELAY_NETLIST   "${FIXDELAY_OUT_FOLDER}/${DESIGN_NAME}.v"
@@ -75,12 +73,25 @@ set FIXDELAY_LOG "${FIXDELAY_OUT_FOLDER}/logs"
 set FIXDELAY_NETLIST_DEL   "${FIXDELAY_OUT_FOLDER}/${DESIGN_NAME}_DEL.v"
 set FIXDELAY_SDC_DEL   "${FIXDELAY_OUT_FOLDER}/${DESIGN_NAME}_DEL.sdc"
 
-# cdc output files
-set CDC_OUT_FOLDER "cdc"
-set CDC_NETLIST "${CDC_OUT_FOLDER}/${DESIGN_NAME}.v"
-set CDC_SDC "${CDC_OUT_FOLDER}/${DESIGN_NAME}.sdc"
-set CDC_SDF "${CDC_OUT_FOLDER}/${DESIGN_NAME}.sdf"
-set CDC_LOG "${CDC_OUT_FOLDER}/logs"
+
+# SYNC SCAN 
+set SYNC_TB_GEN_NETLIST "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_tb_gen.v"
+set SYNC_TB_GEN_SDC   "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_tb_gen.sdc"
+set SYNC_TB_GEN_SCAN_DEF "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_tb_gen.scandef"
+set SYNC_STIL_DC "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_tb_gen.stil"
+set SYNC_TB_RPT   "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_timing100.rpt"
+
+set TB_GEN_OUT_FOLDER   "./tb_gen"
+set TB_GEN_STIL_TMAX "${TB_GEN_OUT_FOLDER}/${DESIGN_NAME}_TMAX.stil"
+
+set SCAN_TB "${TB_GEN_OUT_FOLDER}/${DESIGN_NAME}_tb"
+
+set PROG_DL_OUT_FOLDER "./prog_dl"
+set PROG_DL_NETLIST "${PROG_DL_OUT_FOLDER}/${DESIGN_NAME}.v"
+set PROG_DL_SDC "${PROG_DL_OUT_FOLDER}/${DESIGN_NAME}.sdc"
+
+# BD SCAN
+set SYNC_BD_SCAN_DEF "${SYNC_SYN_OUT_FOLDER}/${DESIGN_NAME}_bd_gen.scandef"
 
 
 # ICC Output Files

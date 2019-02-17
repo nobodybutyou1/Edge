@@ -38,22 +38,7 @@ begin
 end
 endmodule
 
-/*module EDGE_LATCH_R(CK, D, Q, R);
-
-input CK, D, R;
-output Q;
-reg Q;
-
-always @(CK, D, R)
-begin
-	if(R == 1)
-		Q <= 1'b0;
-	else if(CK == 1)
-            	Q <= D;
-end
-
-endmodule
-*/
+// This module has been changed due to SCAN
 module EDGE_DFF_R(D,Q,QN,CK,CKbar,R);
 
 input D,CK,CKbar,R;
@@ -63,7 +48,7 @@ wire in,internal,out;
 assign QN=~Q;
 assign Q=(~R)&&out;
 assign in=(~R)&&D;
-EDGE_LATCH edgeM (CKbar, in, internal);
-EDGE_LATCH   edgeS (CK, internal, out);
+EDGE_LATCH edgeM (CK, in, internal);
+EDGE_LATCH   edgeS (CKbar, internal, out);
 endmodule
 

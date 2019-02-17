@@ -37,7 +37,7 @@ source routing.tcl
 # Load ACDC Delay Line Insertion Environment
 ##########################################################################################
 # Read Relative Timing Constraints
-if { [file exists $DESIGN_ACDC_CONST_ICC] == 1} {
+if { [file exists $DESIGN_ACDC_CONST] == 1} {
 	AC_load_constraints $DESIGN_ACDC_CONST_ICC > $POST_ICC_LOG/load_constraints.log
 	echo "AC Constraints set. You can run 'AC_report_constraints', fix_timing', 'fix_timing_iterative' or 'write_design'."
 } else {

@@ -34,6 +34,7 @@ if {[list_design] == 0} {
 	source $env(EDGE_ROOT)/scripts/environment/common_setting.tcl
 	define_design_lib WORK -path $WORK_FOLDER
 	read_file -format verilog $RETIMING_NETLIST
+	current_design $DESIGN_NAME
 	read_sdc $RETIMING_SDC
 	link
 }
@@ -82,6 +83,9 @@ insert_buffer CT_PATH/CELE_req/b $buffer_cell -new_cell_name {DL_s2_s1_mybuf1 DL
 insert_buffer CT_PATH/CTRL2/a_req $buffer_cell -new_cell_name {DL_s1_s2_mybuf1 DL_s1_s2_mybufn} -no_of_cells 2
 insert_buffer CT_PATH/b_req_BUF/dbout $buffer_cell -new_cell_name {DL_s2_out_mybuf1 DL_s2_out_mybufn} -no_of_cells 2
 
+insert_buffer CT_PATH/CTRL1/a_ack $buffer_cell -new_cell_name {DL_CTRL1_mybuf1 DL_CTRL1_mybufn} -no_of_cells 2
+insert_buffer CT_PATH/CTRL2/a_ack $buffer_cell -new_cell_name {DL_CTRL2_mybuf1 DL_CTRL2_mybufn} -no_of_cells 2
+
 set_dont_touch [get_cells CT_PATH/DL_*]
 
 insert_buffer CT_PATH/CTRL1/CTDBUF/dbin $buffer_cell -new_cell_name {mybuf1 mybufn} -no_of_cells 2
@@ -110,13 +114,102 @@ set_false_path -from [get_pins CT_PATH/CELE_ack/b] -to [get_pins CT_PATH/CELE_re
 set_max_delay -from [get_pins CT_PATH/CTRL1/a_req] -to [get_pins CT_PATH/CTRL1/dff_clk] [expr $PULSE_WIDTH*0.50]
 set_max_delay -from [get_pins CT_PATH/CTRL2/a_req] -to [get_pins CT_PATH/CTRL2/dff_clk] [expr $PULSE_WIDTH*0.50]
 
-#compile
-
 compile_ultra -no_autoungroup
-ungroup -all -flatten
+
+
 
 remove_dont_touch [get_cells *]
+set temp1 [get_object_name [get_cells -of_objects edge_clk_m -filter "@ref_name=~*EDGE_SCELL*"]]
+set temp2 [get_object_name [get_cells -of_objects edge_clk_s -filter "@ref_name=~*DLATCH*"]]
+
+
+set_dont_touch $temp1
+set_dont_touch $temp2
 ungroup -all -flatten
+#uniquify
+change_names -rules verilog -hierarchy -verbose
+write_file -format verilog -out "ttttt.v"
+
+# Insert forward and backward programmable delay line
+set pDLout [pwd]
+exec python $env(EDGE_ROOT)/scripts/bd_conv/pdelayline.py $env(EDGE_ROOT)/example/plasma/tcl/pdelayline.tcl $pDLout/pdelayline.v
+exec python $env(EDGE_ROOT)/scripts/bd_conv/pdelayline.py $env(EDGE_ROOT)/example/plasma/tcl/pdelaylineR.tcl $pDLout/pdelaylineR.v
+analyze -format verilog pdelaylineR.v
+elaborate pdelayline
+rename_design pdelayline pdelaylineR
+set_dont_touch [get_cells *]
+set_dont_touch [get_nets *]
+link
+current_design $DESIGN_NAME
+foreach pDL [list pDLRctrl1 pDLRctrl2] {
+	create_cell $pDL pdelaylineR
+}
+uniquify
+
+analyze -format verilog pdelayline.v
+elaborate pdelayline
+set_dont_touch [get_cells *]
+set_dont_touch [get_nets *]
+link
+current_design $DESIGN_NAME
+foreach pDL [list pDLinm pDLms pDLsm pDLsout] {
+	create_cell $pDL pdelayline
+}
+
+uniquify
+
+
+
+# Forward
+foreach pDL [list pDLinm pDLms pDLsm pDLsout] buf [list DL_in_s1_mybuf1 DL_s1_s2_mybuf1 DL_s2_s1_mybuf1 DL_s2_out_mybuf1] {
+	set sList [get_object_name [get_pins $pDL/s*]]
+	set sLength [llength $sList]
+	#echo $sLength
+	for {set i 0} {$i < $sLength} {incr i} {
+    	# create port and connect it to select signals
+    	create_port -direction in s$pDL$i
+    	create_net s$pDL$i
+		if {$sLength == 1} {
+			connect_net s$pDL$i [get_pins $pDL/s] 
+		} else {
+			connect_net s$pDL$i [get_pins $pDL/s[$i]] 
+		}
+    	connect_net s$pDL$i [get_ports s$pDL$i]
+	}
+	set tempnet [get_nets -of_objects [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]]
+    	#list $tempnet
+	disconnect_net $tempnet [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]
+	connect_net $tempnet [get_pins $pDL/in]
+	connect_pin -from [get_pins $pDL/out] -to [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]
+}
+# Backward
+
+foreach pDL [list pDLRctrl1 pDLRctrl2] buf [list DL_CTRL1_mybuf1 DL_CTRL2_mybuf1] {
+	set sList [get_object_name [get_pins $pDL/s*]]
+	set sLength [llength $sList]
+	#echo $sLength
+	for {set i 0} {$i < $sLength} {incr i} {
+    	# create port and connect it to select signals
+    	create_port -direction in s$pDL$i
+    	create_net s$pDL$i
+		if {$sLength == 1} {
+			connect_net s$pDL$i [get_pins $pDL/s] 
+		} else {
+			connect_net s$pDL$i [get_ports s$pDL[$i]]
+		}
+	}
+	set tempnet [get_nets -of_objects [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]]
+    	#list $tempnet
+	disconnect_net $tempnet [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]
+	connect_net $tempnet [get_pins $pDL/in]
+	connect_pin -from [get_pins $pDL/out] -to [get_pins -of_objects CT_PATH_$buf -filter "direction==1"]
+}
+
+
+set_dont_touch [get_cells pDL*]
+set_dont_touch [get_nets -of_objects [get_cells pDL*]]
+
+
 redirect $POST_DC_LOG/change_names { change_names -rules verilog -hierarchy -verbose }
 write_file -hierarchy -format verilog -out $POST_DC_NETLIST
 write_file -hierarchy -format ddc -out $POST_DC_DDC
@@ -127,9 +220,30 @@ file copy -force filenames.log ${POST_DC_LOG}/filenames.log
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: compile_ultra, write_file done $clockstring"
 
+
+
 source fix.tcl
 
+#report_timing -delay_type min -from $edge_clk_s_latch_out -to $edge_clk_m_latch_in > clk_s_latch_out_to_clk_m_latch_in.timing
+#report_timing -delay_type min -from $edge_clk_m_latch_out -to $edge_clk_s_latch_in > clk_m_latch_out_to_clk_s_latch_in.timing
+#report_timing -delay_type min -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in > all_inputs_to_clk_m_latch_in.timing
+#report_timing -delay_type min -from $edge_clk_s_latch_out -to [all_outputs] > clk_s_latch_out_to_all_outputs.timing
+
+
 #### delete the delay line from Lreq to master controlller ####
+remove_dont_touch [get_cells pDL*]
+remove_dont_touch [get_nets -of_objects [get_cells pDL*]]
+
+foreach_in_collection  net [get_nets spDLinm*] {
+	disconnect_net $net -all
+}
+set innet [get_nets -of_objects [get_pins pDLinm/in]]
+set outnet [get_nets -of_objects [get_pins pDLinm/out]]
+disconnect_net $innet [get_ports Lreq]
+disconnect_net $outnet [get_pins pDLinm/out]
+connect_net $outnet [get_ports Lreq] 
+remove_cell [get_cells pDLinm]
+
 set last_buf [get_cells *in_s1_mybufn]
 set i 0
 while 1 {
@@ -153,9 +267,15 @@ while 1 {
 	}
 }
 
+# This is needed only when we remove the delay line from input to master controller
 set_min_delay -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in [expr $PULSE_WIDTH*1.10 + $extra_in_master_min]
 
-write_file -hierarchy -format verilog -out $FIXDELAY_NETLIST_DEL
+set_dont_touch [get_cells pDL*]
+set_dont_touch [get_nets -of_objects [get_cells pDL*]]
+
+compile_ultra -no_autoungroup
+
+#write_file -hierarchy -format verilog -out $FIXDELAY_NETLIST_DEL
 write_sdc $FIXDELAY_SDC_DEL
 
 
@@ -163,13 +283,10 @@ write_sdc $FIXDELAY_SDC_DEL
 set clockstring [clock format [clock second] -format "%Y/%m/%d %H:%M:%S"]
 echo "TIMESTAMP: fix done $clockstring"
 
-report_timing -delay_type min -from $edge_clk_s_latch_out -to $edge_clk_m_latch_in > clk_s_latch_out_to_clk_m_latch_in.timing
-report_timing -delay_type min -from $edge_clk_m_latch_out -to $edge_clk_s_latch_in > clk_m_latch_out_to_clk_s_latch_in.timing
-report_timing -delay_type min -from [remove_from_collection [all_inputs] [get_ports "Lreq Rack edge_reset edge_ctrl_reset"]] -to $edge_clk_m_latch_in > all_inputs_to_clk_m_latch_in.timing
-report_timing -delay_type min -from $edge_clk_s_latch_out -to [all_outputs] > clk_s_latch_out_to_all_outputs.timing
 
-return
-if { !$env(DEBUG) } {
-        exit
-}
+
+
+#if { !$env(DEBUG) } {
+#        exit
+#}
 

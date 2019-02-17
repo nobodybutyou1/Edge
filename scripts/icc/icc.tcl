@@ -41,7 +41,7 @@ set sh_command_log_file "${POST_ICC_LOG}/command.log"
 #file copy -force filenames.log ${POST_ICC_LOG}/filenames.log
 
 #source report_cell.tcl > reports/cell.rpt
-if { !$env(DEBUG) } {
+#if { !$env(DEBUG) } {
 #   exit
-}
+#}
 
